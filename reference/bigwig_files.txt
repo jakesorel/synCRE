@@ -1,0 +1,10 @@
+ATAC_D5_500_M  /camp/lab/briscoej/working/Joaquina/hpc_camp/D5_500_M_R1.mLb.clN.bigWig
+Nishi_Olig2   /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/bigwig/Olig2_IP_R1.mLb.clN.bigWig
+Nishi_Nkx2-2   /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/bigwig/Nkx22_IP_R1.mLb.clN.bigWig
+Nishi_Gli3   /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/bigwig/Gli3FLAG_IP_R1.mLb.clN.bigWig
+Nishi_Nkx6-1 /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/bigwig/Nkx61_IP_R1.mLb.clN.bigWig
+Kutejova_Nkx2-2    /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Kutejova2016_PMID26972603/results/bwa/mergedLibrary/bigwig/Nkx22_IP_R1.mLb.clN.bigWig
+Kutejova_Nkx6-1 /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Kutejova2016_PMID26972603/results/bwa/mergedLibrary/bigwig/Nkx61_IP_R1.mLb.clN.bigWig
+Kutejova_Olig2 /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Kutejova2016_PMID26972603/results/bwa/mergedLibrary/bigwig/Olig2_IP_R1.mLb.clN.bigWig
+Kutejova_Sox2_D /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Kutejova2016_PMID26972603/results/bwa/mergedLibrary/bigwig/Sox2-d_IP_R1.mLb.clN.bigWig
+Kutejova_Sox2_p3 /camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Kutejova2016_PMID26972603/results/bwa/mergedLibrary/bigwig/Sox2-p3_IP_R1.mLb.clN.bigWig

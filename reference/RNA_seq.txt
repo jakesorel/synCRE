@@ -1,0 +1,1 @@
+/camp/lab/luscomben/home/users/cornwaj/synCRE/reference/RNA_seq/RNA_normCounts_filter1.csv
