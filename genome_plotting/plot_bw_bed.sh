@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # #
 # for i in $(seq 1 286)
 # do
@@ -5,6 +7,9 @@
 #    echo ${filename}
 #    python reformat_functions/clean_bed.py "${filename}"
 # done
+
+eval "$(conda shell.bash hook)"
+source activate pygenometracks
 
 for i in $(seq 0 7)
 do
@@ -14,6 +19,8 @@ do
     python genome_plotting/make_ini_cluster.py "$i"
     pyGenomeTracks --tracks genome_plotting/tracks.ini --region chr16:91191337-91193823 -o genome_plotting/bigwig_with_genes_merge_${i}.pdf
 done
+source activate synCRE
+
 # # bed_names=""
 # # cat clustered_genes/archetypes/archetypes_for_cluster_0.txt | while read i
 # # do

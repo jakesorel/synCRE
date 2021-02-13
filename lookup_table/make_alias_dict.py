@@ -10,20 +10,20 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 from reformat_functions.functions import *
+if __name__ == "__main__":
+    all_gene_list = pd.read_csv("reference/gene_info",sep="\t")
+    official_name = capitalize_list(list(all_gene_list["Symbol"]))
+    all_names = []
+    for i, synonym in enumerate(all_gene_list["Synonyms"].values):
+        if synonym == "-":
+            all_names.append([official_name[i]])
+        else:
+            syn_vals = capitalize_list(synonym.split("|"))
+            all_names.append([official_name[i]]+syn_vals)
 
-all_gene_list = pd.read_csv("reference/gene_info",sep="\t")
-official_name = capitalize_list(list(all_gene_list["Symbol"]))
-all_names = []
-for i, synonym in enumerate(all_gene_list["Synonyms"].values):
-    if synonym == "-":
-        all_names.append([official_name[i]])
-    else:
-        syn_vals = capitalize_list(synonym.split("|"))
-        all_names.append([official_name[i]]+syn_vals)
+    aliases = {}
+    for i, names in enumerate(all_names):
+        for name in names:
+            aliases[name] = official_name[i]
 
-aliases = {}
-for i, names in enumerate(all_names):
-    for name in names:
-        aliases[name] = official_name[i]
-
-save_dict(aliases,"lookup_table/aliases")
+    save_dict(aliases,"lookup_table/aliases")
