@@ -7,6 +7,7 @@ os.chdir("..")
 from reformat_functions.functions import *
 
 
+
 def get_gene_id(df,gene):
     return np.nonzero(df.index.values == gene)[0][0]
 
