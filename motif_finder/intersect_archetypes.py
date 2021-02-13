@@ -1,9 +1,10 @@
 from pybedtools import BedTool
-from reformat_functions.functions import *
 import os, sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
+from reformat_functions.functions import *
+
 
 make_directory("results/archetype_beds")
 eCRE_names = os.listdir("reference/eCRE_locs")
