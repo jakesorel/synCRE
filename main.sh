@@ -27,5 +27,13 @@ python expression_clustering/RNA_seq_cluster.py
 echo "Clustered RNAseq expression"
 
 
+##################
+#Intersect archetype list with bed_file
+###################
+
+ml BEDTools/2.26.0-foss-2016b
+bedtools intersect -wb -a enhancer_beds/o2e33_oosterveen.bed -b archetypes/mm10.archetype_motifs.v1.0.chr16.bed > results/o2e33_oosterveen_archetypes.bed
+
+
 
 
