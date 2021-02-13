@@ -58,8 +58,8 @@ if __name__ == "__main__":
     lookup = open_dict("lookup_table/lookup_table")
     gene_names = list(lookup.keys())
     # gene_names = list(pd.read_csv("reference/TF_list.csv",header=None).values.ravel())
-    df = pd.read_csv("reference/RNA_seq/RNA_normCounts_filter1.csv",index_col=0)
-    # df = pd.read_csv(open("reference/RNA_seq.txt").read(),index_col=0)
+    # df = pd.read_csv("reference/RNA_seq/RNA_normCounts_filter1.csv",index_col=0)
+    df = pd.read_csv(open("reference/RNA_seq.txt").read(),index_col=0)
 
     #Standardise names
     df.index = standardize_names(df.index,aliases,true_names)
