@@ -19,7 +19,8 @@ for name in eCRE_names:
     make_directory("results/archetype_beds/%s/all_beds"%eCREname)
     archetype_intersect = eCRE.intersect(archetypes,wb=True).saveas("results/archetype_beds/%s/all_beds/%s_archetypes.bed"%(eCREname,eCREname))
     print("Ran intersect on %s"%name)
-    out_df = pd.DataFrame(np.array([archetype_intersect[i] for i in range(3,9)]).T)
+    df = archetype_intersect.to_dataframe()
+    out_df = pd.DataFrame(np.array([df[i] for i in range(3,9)]).T)
     out_df.to_csv("results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(eCREname,eCREname),sep="\t",index=False,header=False)
     print("Saved clean version")
 
