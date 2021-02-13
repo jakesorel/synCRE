@@ -6,8 +6,8 @@ import os, sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-os.chdir("..")
-print(os.path.abspath(os.curdir))
+# os.chdir("..")
+# print(os.path.abspath(os.curdir))
 from reformat_functions.functions import *
 
 
