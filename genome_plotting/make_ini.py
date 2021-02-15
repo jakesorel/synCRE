@@ -24,14 +24,28 @@ file_type = bigwig
 
 
 
-archetype_template = """
+archetype_template_rows = """
 [%s]
 file=%s
 title=%s
 color = %s
 height = %.3f
 # line_width = 0.5
-gene_rows = %d
+# gene_rows = %d
+labels = %s
+file_type = bed
+fontsize = 10
+style = UCSC
+"""
+
+archetype_template_height = """
+[%s]
+file=%s
+title=%s
+color = %s
+height = %.3f
+# line_width = 0.5
+# gene_rows = %d
 labels = %s
 file_type = bed
 fontsize = 10
@@ -50,8 +64,11 @@ pyGenomeTracks --tracks results/genome_plots/%s/config_files/%s/%s.ini --region 
 def make_bigwig(name,dir,color="#666",height=1.5):
     return bigwig_template%(name,dir,name,color,height)
 
-def make_bed(name,dir,color="darkblue",height=0.75,gene_rows=2,labels="off"):
-    out = archetype_template%(name,dir,name,color,height,gene_rows,labels)
+def make_bed(name,dir,color="darkblue",height=1.5,gene_rows=None,labels="off"):
+    if gene_rows is None:
+        out = archetype_template_height%(name,dir,name,color,height,labels)
+    else:
+        out = archetype_template_rows%(name,dir,name,color,gene_rows,labels)
     return out
 
 def make_runline(eCREname, cat,filename,chr,start,end):
