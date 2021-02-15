@@ -13,11 +13,8 @@ for eCREname in eCRE_names:
     make_directory("results/archetype_beds/%s/by_cluster" % (eCREname))
     for RNA_cluster in range(n_RNA_cluster):
         archetypes = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
-        print(archetypes)
         first = False
-
         for i in archetypes:
-            print("results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed"%(eCREname,eCREname,i))
             try:
                 if first is False:
 
@@ -29,3 +26,4 @@ for eCREname in eCRE_names:
             except:
                 a = 1
         df.to_csv("results/archetype_beds/%s/by_cluster/%s_cluster_%d.bed"%(eCREname,eCREname,RNA_cluster),sep="\t",index=False,header=False)
+print("Saved beds by RNA-seq cluster")
