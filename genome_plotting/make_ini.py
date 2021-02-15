@@ -10,7 +10,7 @@ from pybedtools import BedTool
 
 bigwig_template = """
 [%s]
-file=%s
+file=~%s
 title=%s
 color = %s
 min_value = 0
@@ -92,6 +92,7 @@ for name in eCRE_names:
     filename = "all"
     f = open('results/genome_plots/%s/config_files/%s/%s.ini'%(name,cat,filename), 'w')
     for bwname,bwdir in bigwigs.values:
+        print(bwdir)
         f.write(make_bigwig(bwname,bwdir))
     f.write(foot)
 
