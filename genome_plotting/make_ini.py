@@ -83,10 +83,13 @@ eCRE_names = [name.split(".bed")[0] for name in eCRE_names]
 
 lookup = open_dict("lookup_table/lookup_table")
 
+h = open("results/genome_plots/run_all.sh", 'w')
+
 for name in eCRE_names:
     make_directory("results/genome_plots/%s"%name)
     make_directory("results/genome_plots/%s/run_files"%name)
     g = open("results/genome_plots/%s/run_files/run.sh"%name,'w')
+    h.write("./results/genome_plots/%s/run_files/run.sh"%name)
     make_directory("results/genome_plots/%s/config_files"%name)
     make_directory("results/genome_plots/%s/config_files/all"%name)
     make_directory("results/genome_plots/%s/config_files/by_cluster"%name)
@@ -178,3 +181,4 @@ for name in eCRE_names:
     # archetypes = np.loadtxt("results/archetype_beds/%s/by_cluster/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
 
     g.close()
+h.close()
