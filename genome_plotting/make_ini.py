@@ -101,33 +101,33 @@ for name in eCRE_names:
     # bed_dir = "results/archetype_beds/%s"%name
     e_chrom,e_start,e_end = BedTool("reference/eCRE_locs/%s.bed"%name).to_dataframe().values.ravel()
 
-
-    # ##Config file for all
-
-    cat = "all"
-    filename = "all"
-    f = open('results/genome_plots/%s/config_files/%s/%s.ini'%(name,cat,filename), 'w')
-    for bwname,bwdir in bigwigs.values:
-        if "#" not in bwname:
-            f.write(make_bigwig(bwname,bwdir))
-    f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name),height=3))
-    f.write(foot)
-    f.close()  # you can omit in most cases as the destructor will call it
-    g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
-
-    cat = "by_cluster_merge"
-    archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
-    for archetype_file in archetype_files:
-        cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
-        cluster_name = "RNA_cluster_%d"%cluster_no
-        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cluster_name), 'w')
-        for bwname, bwdir in bigwigs.values:
-            if "#" not in bwname:
-                f.write(make_bigwig(bwname, bwdir))
-        f.write(make_bed(name=cluster_name,dir="results/archetype_beds/%s/by_cluster/%s"%(name,archetype_file),height=3))
-        f.write(foot)
-        f.close()  # you can omit in most cases as the destructor will call it
-        g.write(make_runline(eCREname=name, cat=cat, filename=cluster_name, chr=e_chrom, start=e_start, end=e_end))
+    #
+    # # ##Config file for all
+    #
+    # cat = "all"
+    # filename = "all"
+    # f = open('results/genome_plots/%s/config_files/%s/%s.ini'%(name,cat,filename), 'w')
+    # for bwname,bwdir in bigwigs.values:
+    #     if "#" not in bwname:
+    #         f.write(make_bigwig(bwname,bwdir))
+    # f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name),height=3))
+    # f.write(foot)
+    # f.close()  # you can omit in most cases as the destructor will call it
+    # g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
+    #
+    # cat = "by_cluster_merge"
+    # archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
+    # for archetype_file in archetype_files:
+    #     cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
+    #     cluster_name = "RNA_cluster_%d"%cluster_no
+    #     f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cluster_name), 'w')
+    #     for bwname, bwdir in bigwigs.values:
+    #         if "#" not in bwname:
+    #             f.write(make_bigwig(bwname, bwdir))
+    #     f.write(make_bed(name=cluster_name,dir="results/archetype_beds/%s/by_cluster/%s"%(name,archetype_file),height=3))
+    #     f.write(foot)
+    #     f.close()  # you can omit in most cases as the destructor will call it
+    #     g.write(make_runline(eCREname=name, cat=cat, filename=cluster_name, chr=e_chrom, start=e_start, end=e_end))
 
     cat = "by_cluster"
     archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
