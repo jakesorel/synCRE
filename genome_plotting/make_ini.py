@@ -29,7 +29,7 @@ archetype_template_rows = """
 file=%s
 title=%s
 color = %s
-# height = 1.5
+height = %.3f
 # line_width = 0.5
 gene_rows = %d
 labels = %s
@@ -64,11 +64,11 @@ pyGenomeTracks --tracks results/genome_plots/%s/config_files/%s/%s.ini --region 
 def make_bigwig(name,dir,color="#666",height=1.5):
     return bigwig_template%(name,dir,name,color,height)
 
-def make_bed(name,dir,color="darkblue",height=1.5,gene_rows=None,labels="off"):
+def make_bed(name,dir,color="darkblue",height=0.75,gene_rows=None,labels="off"):
     if gene_rows is None:
         out = archetype_template_height%(name,dir,name,color,height,labels)
     else:
-        out = archetype_template_rows%(name,dir,name,color,gene_rows,labels)
+        out = archetype_template_rows%(name,dir,name,color,height,gene_rows,labels)
     return out
 
 def make_runline(eCREname, cat,filename,chr,start,end):
@@ -141,7 +141,7 @@ for name in eCRE_names:
         archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt"%cluster_no,dtype=np.int64)
         for aid in archetype_ids:
             f.write(make_bed(name="A%d"%aid, dir="results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed" % (name,name,aid),
-                             height=3))
+                             gene_rows=2))
 
         #####^^ list the archetypes for each cluster. Retrieve list from text file. Run the bed formatting for each, setting row_no, export
         f.write(foot)
