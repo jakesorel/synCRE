@@ -156,7 +156,7 @@ for name in eCRE_names:
     # for archetype_file in archetype_files:
     #     cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
     #     cluster_name = "RNA_cluster_%d"%cluster_no
-    f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cluster_name), 'w')
+    f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cat), 'w')
     for bwname, bwdir in bigwigs.values:
         if "#" not in bwname:
             f.write(make_bigwig(bwname, bwdir))
