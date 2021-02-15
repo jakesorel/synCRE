@@ -85,7 +85,7 @@ for name in eCRE_names:
     e_chrom,e_start,e_end = BedTool("reference/eCRE_locs/%s.bed"%name).to_dataframe().values.ravel()
 
     # ##Config file for all
-    # archetypes = np.loadtxt("clustered_genes/archetypes/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
+    archetypes = np.loadtxt("results/archetype_beds/%s/by_cluster/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
 
     cat = "all"
     filename = "all"
@@ -93,11 +93,18 @@ for name in eCRE_names:
     for bwname,bwdir in bigwigs.values:
         print(bwdir)
         f.write(make_bigwig(bwname,bwdir))
+    f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name)))
     f.write(foot)
-
     f.close()  # you can omit in most cases as the destructor will call it
-
-    # for i in archetypes:
-    #     f.write(generate_archetype_script(i))
     g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
+    #
+    # cat = "merge"
+    # archetype_files = np.loadtxt("results/archetype_beds/%s/by_cluster"%name)
+    # for archetype_file in archetype_files:
+    #     cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
+    #     cluster_name = "RNA_cluster_%d"%cluster_no
+    #     f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cluster_name), 'w')
+    #     make_bed("results/archetype_beds/%s/by_cluster/%s"%(name,archetype_file), dir)
+    # eCRE_names = os.listdir("reference/eCRE_locs")
+
     g.close()
