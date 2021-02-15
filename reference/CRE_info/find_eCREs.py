@@ -8,14 +8,14 @@ oosterveendf = BedTool("reference/CRE_info/oosterveen_mm10.bed").to_dataframe()
 
 locs, names = [],[]
 for i in range(oosterveendf.shape[0]):
-    loc = consensus.intersect(oosterveen.at([i])).to_dataframe()
+    loc = consensus.intersect(oosterveen.at([i]),u=True).to_dataframe()
     name = oosterveendf["name"].values[i]
     locs.append(loc)
     names.append(name)
-inters = consensus.intersect(oosterveen,wa=True,u=True).to_dataframe()
+# inters = consensus.intersect(oosterveen,wa=True,u=True).to_dataframe()
 
 
-for i in range(inters.shape[0]):
+for i in range(len(locs)):
     # pd.DataFrame([eCRE[inters.columns[0:3]].values]).to_csv("../../reference/eCRE_locs/%s.bed"%eCRE["name"],header=None,index=None,sep="\t")
     locs[i].to_csv("reference/eCRE_locs/%s.bed"%names[i],header=None,index=None,sep="\t")
 
