@@ -15,6 +15,7 @@ for eCREname in eCRE_names:
         archetypes = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
         print(archetypes)
         first = False
+
         for i in archetypes:
             try:
                 if first is False:
