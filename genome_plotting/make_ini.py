@@ -10,7 +10,7 @@ from pybedtools import BedTool
 
 bigwig_template = """
 [%s]
-file=~%s
+file=%s
 title=%s
 color = %s
 min_value = 0
