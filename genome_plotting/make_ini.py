@@ -116,7 +116,7 @@ for name in eCRE_names:
     g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
 
     cat = "merge"
-    archetype_files = np.loadtxt("results/archetype_beds/%s/by_cluster"%name)
+    archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
     for archetype_file in archetype_files:
         cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
         cluster_name = "RNA_cluster_%d"%cluster_no
