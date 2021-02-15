@@ -160,7 +160,7 @@ for name in eCRE_names:
     for bwname, bwdir in bigwigs.values:
         if "#" not in bwname:
             f.write(make_bigwig(bwname, bwdir))
-    archetype_ids = [lookup(gene) for gene in candidate_genes]
+    archetype_ids = [lookup[gene] for gene in candidate_genes]
     for i, aid in enumerate(archetype_ids):
         f.write(make_bed(name="%s (A%d)"%(candidate_genes[i],aid), dir="results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed" % (name,name,aid),
                          gene_rows=2))
