@@ -70,7 +70,7 @@ eCRE_names = [name.split(".bed")[0] for name in eCRE_names]
 for name in eCRE_names:
     make_directory("results/genome_plots/%s"%name)
     make_directory("results/genome_plots/%s/run_files"%name)
-    g = open("results/genome_plots/run_files/%s/run.sh"%name)
+    g = open("results/genome_plots/%s/run_files/run.sh"%name)
     make_directory("results/genome_plots/%s/config_files"%name)
     make_directory("results/genome_plots/%s/config_files/all"%name)
     make_directory("results/genome_plots/%s/config_files/by_cluster"%name)
