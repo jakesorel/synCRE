@@ -20,10 +20,11 @@ for name in eCRE_names:
     make_directory("results/archetype_beds/%s"%eCREname)
     make_directory("results/archetype_beds/%s/all_beds"%eCREname)
     make_directory("results/archetype_beds/%s/by_archetype"%eCREname)
-    archetype_intersect = eCRE.intersect(archetypes,wb=True).saveas("results/archetype_beds/%s/all_beds/%s_archetypes.bed"%(eCREname,eCREname))
+    archetype_intersect = archetypes.intersect(eCRE,wb=True).saveas("results/archetype_beds/%s/all_beds/%s_archetypes.bed"%(eCREname,eCREname))
     print("Ran intersect on %s"%name)
     df = archetype_intersect.to_dataframe()
-    out_df = pd.DataFrame(df[df.columns[3:9]])
+    # out_df = pd.DataFrame(df[df.columns[3:9]])
+    out_df = pd.DataFrame(df[df.columns[:6]])
     out_df.to_csv("results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(eCREname,eCREname),sep="\t",index=False,header=False)
     print("Saved clean version")
     bed_names = out_df[out_df.columns[3]].values
