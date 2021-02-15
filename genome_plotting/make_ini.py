@@ -110,7 +110,7 @@ for name in eCRE_names:
     for bwname,bwdir in bigwigs.values:
         if "#" not in bwname:
             f.write(make_bigwig(bwname,bwdir))
-    f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name)),height=3)
+    f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name),height=3))
     f.write(foot)
     f.close()  # you can omit in most cases as the destructor will call it
     g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
@@ -124,7 +124,7 @@ for name in eCRE_names:
         for bwname, bwdir in bigwigs.values:
             if "#" not in bwname:
                 f.write(make_bigwig(bwname, bwdir))
-        make_bed(name=cluster_name,dir="results/archetype_beds/%s/by_cluster/%s"%(name,archetype_file),height=3)
+        f.write(make_bed(name=cluster_name,dir="results/archetype_beds/%s/by_cluster/%s"%(name,archetype_file),height=3))
         f.write(foot)
         f.close()  # you can omit in most cases as the destructor will call it
         g.write(make_runline(eCREname=name, cat=cat, filename=cluster_name, chr=e_chrom, start=e_start, end=e_end))
