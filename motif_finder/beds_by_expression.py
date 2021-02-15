@@ -17,8 +17,10 @@ for eCREname in eCRE_names:
         first = False
 
         for i in archetypes:
+            print("results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed"%(eCREname,eCREname,i))
             try:
                 if first is False:
+
                     df = pd.read_csv("results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed"%(eCREname,eCREname,i), sep="\t", header=None)
                     first = True
                 else:
