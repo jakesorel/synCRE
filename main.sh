@@ -34,3 +34,10 @@ python motif_finder/intersect_archetypes.py
 python motif_finder/beds_by_expression.py
 
 
+###################
+#Plot results
+##################
+eval "$(conda shell.bash hook)"
+source activate pygenometracks
+python genome_plotting/make_ini.py
+./results/genome_plots/run_all.sh
