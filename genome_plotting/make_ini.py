@@ -89,7 +89,7 @@ for name in eCRE_names:
     make_directory("results/genome_plots/%s"%name)
     make_directory("results/genome_plots/%s/run_files"%name)
     g = open("results/genome_plots/%s/run_files/run.sh"%name,'w')
-    h.write("./results/genome_plots/%s/run_files/run.sh"%name)
+    h.write("./results/genome_plots/%s/run_files/run.sh \n"%name)
     make_directory("results/genome_plots/%s/config_files"%name)
     make_directory("results/genome_plots/%s/config_files/all"%name)
     make_directory("results/genome_plots/%s/config_files/by_cluster"%name)
@@ -105,20 +105,20 @@ for name in eCRE_names:
     # bed_dir = "results/archetype_beds/%s"%name
     e_chrom,e_start,e_end = BedTool("reference/eCRE_locs/%s.bed"%name).to_dataframe().values.ravel()
 
-    #
-    # # ##Config file for all
-    #
-    # cat = "all"
-    # filename = "all"
-    # f = open('results/genome_plots/%s/config_files/%s/%s.ini'%(name,cat,filename), 'w')
-    # for bwname,bwdir in bigwigs.values:
-    #     if "#" not in bwname:
-    #         f.write(make_bigwig(bwname,bwdir))
-    # f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name),height=3))
-    # f.write(foot)
-    # f.close()  # you can omit in most cases as the destructor will call it
-    # g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
-    #
+
+    # ##Config file for all
+
+    cat = "all"
+    filename = "all"
+    f = open('results/genome_plots/%s/config_files/%s/%s.ini'%(name,cat,filename), 'w')
+    for bwname,bwdir in bigwigs.values:
+        if "#" not in bwname:
+            f.write(make_bigwig(bwname,bwdir))
+    f.write(make_bed("All archetypes","results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(name,name),height=3))
+    f.write(foot)
+    f.close()  # you can omit in most cases as the destructor will call it
+    g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
+
     # cat = "by_cluster_merge"
     # archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
     # for archetype_file in archetype_files:
