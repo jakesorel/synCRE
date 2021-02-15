@@ -87,7 +87,6 @@ for name in eCRE_names:
     # ##Config file for all
     # archetypes = np.loadtxt("clustered_genes/archetypes/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
 
-
     cat = "all"
     filename = "all"
     f = open('results/genome_plots/%s/config_files/%s/%s.ini'%(name,cat,filename), 'w')
