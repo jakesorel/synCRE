@@ -115,7 +115,7 @@ for name in eCRE_names:
     f.close()  # you can omit in most cases as the destructor will call it
     g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
 
-    cat = "merge"
+    cat = "by_cluster_merge"
     archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
     for archetype_file in archetype_files:
         cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
