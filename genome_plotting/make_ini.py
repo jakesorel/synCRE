@@ -66,10 +66,11 @@ eCRE_names = [name.split(".bed")[0] for name in eCRE_names]
 
 
 
-g = open("results/genome_plots/run_files")
+
 for name in eCRE_names:
     make_directory("results/genome_plots/%s"%name)
     make_directory("results/genome_plots/%s/run_files"%name)
+    g = open("results/genome_plots/run_files/%s/run.sh")
     make_directory("results/genome_plots/%s/config_files"%name)
     make_directory("results/genome_plots/%s/config_files/all"%name)
     make_directory("results/genome_plots/%s/config_files/by_cluster"%name)
@@ -99,4 +100,4 @@ for name in eCRE_names:
     # for i in archetypes:
     #     f.write(generate_archetype_script(i))
     g.write(runline_template(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
-g.close()
+    g.close()
