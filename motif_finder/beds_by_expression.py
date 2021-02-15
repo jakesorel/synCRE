@@ -28,4 +28,4 @@ for eCREname in eCRE_names:
                     df = pd.concat([df,pd.read_csv("results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed"%(eCREname,eCREname,i),sep="\t",header=None)])
             except:
                 a = 1
-        df.to_csv("results/archetype_beds/%s/by_cluster/%s_cluster_%d.bed"%(eCREname,eCREname,i),sep="\t",index=False,header=False)
+        df.to_csv("results/archetype_beds/%s/by_cluster/%s_cluster_%d.bed"%(eCREname,eCREname,RNA_cluster),sep="\t",index=False,header=False)

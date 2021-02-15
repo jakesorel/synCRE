@@ -31,5 +31,5 @@ for name in eCRE_names:
         cid = motifs.iloc[i]["Cluster_ID"]
         bed_ids = np.where(bed_names == motif)[0]
         out_df.iloc[bed_ids].to_csv("results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed"%(eCREname,eCREname,i), sep="\t", header=False, index=False)
-
+    print("Saved sorted by archetypes")
 
