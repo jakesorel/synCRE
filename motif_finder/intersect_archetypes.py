@@ -26,7 +26,7 @@ for name in eCRE_names:
     out_df = pd.DataFrame(df[df.columns[3:9]])
     out_df.to_csv("results/archetype_beds/%s/all_beds/%s_archetypes_clean.bed"%(eCREname,eCREname),sep="\t",index=False,header=False)
     print("Saved clean version")
-    bed_names = out_df[3].values
+    bed_names = out_df[out_df.columns[3]].values
     for i, motif in enumerate(motifs["Name"].values):
         cid = motifs.iloc[i]["Cluster_ID"]
         bed_ids = np.where(bed_names == motif)[0]
