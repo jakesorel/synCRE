@@ -99,5 +99,5 @@ for name in eCRE_names:
 
     # for i in archetypes:
     #     f.write(generate_archetype_script(i))
-    g.write(runline_template(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
+    g.write(make_runline(eCREname = name,cat=cat,filename=filename,chr=e_chrom,start=e_start,end=e_end))
     g.close()
