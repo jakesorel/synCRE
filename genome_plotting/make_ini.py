@@ -84,6 +84,7 @@ for name in eCRE_names:
     # bed_dir = "results/archetype_beds/%s"%name
     e_chrom,e_start,e_end = BedTool("reference/eCRE_locs/%s.bed"%name).to_dataframe().values.ravel()
 
+
     # ##Config file for all
     # archetypes = np.loadtxt("results/archetype_beds/%s/by_cluster/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
 
