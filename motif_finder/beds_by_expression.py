@@ -9,6 +9,7 @@ from reformat_functions.functions import *
 n_RNA_cluster = len(os.listdir("results/expression/archetypes"))
 eCRE_names = os.listdir("reference/eCRE_locs")
 for eCREname in eCRE_names:
+    eCREname = eCREname.split(".bed")[0]
     make_directory("results/archetype_beds/%s/by_cluster" % (eCREname))
     for RNA_cluster in range(n_RNA_cluster):
         archetypes = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt"%RNA_cluster,dtype=np.int64)
