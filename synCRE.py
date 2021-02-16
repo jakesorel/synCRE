@@ -470,8 +470,7 @@ python2 moods-dna.py  \
             bedname = bed.split(".bed")[0]
             make_directory("results/motifs/by_archetype/%s"%bedname)
             beddf = pd.read_csv("results/motifs/bed/%s"%bed,sep="\t",header=None)
-            archetypes = np.unique(beddf[3])
-            for archetype in archetypes:
+            for archetype in range(1,287):
                 beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
 
     def motifs_by_cluster(self):
