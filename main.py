@@ -2,7 +2,7 @@ from synCRE import *
 
 # expr = Expression(RNA_seq_file="reference/RNA_seq_local.txt")
 # expr.run_all()
-#
+
 # mtf = Motif_Finder()
 # mtf.make_pmf()
 # mtf.sample_eCRE_sequence()
