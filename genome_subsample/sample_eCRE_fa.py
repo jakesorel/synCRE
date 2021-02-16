@@ -20,6 +20,7 @@ from pybedtools import BedTool,example_filename
 import os, sys
 import pandas as pd
 import numpy as np
+import shutil
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
@@ -30,6 +31,7 @@ make_directory("results/fasta/by_eCRE")
 
 # bed_files = os.listdir("reference/eCRE_locs")
 bed_files = ["Olig2.bed"]
+delete_directory("results/fasta/scrap")
 for bed_file in bed_files:
     make_directory("results/fasta/scrap")
     eCRE_name = bed_file.split(".bed")[0]
@@ -42,7 +44,7 @@ for bed_file in bed_files:
     eCRE.sequence("results/fasta/scrap/out.fa",fo="results/fasta/by_eCRE/%s.fa"%eCRE_name)
     # except:
     #     pass
-    os.rmdir("results/fasta/scrap")
+    delete_directory("results/fasta/scrap")
     # os.remove("results/fasta/scrap/out.fa")
     # os.remove("results/fasta/scrap/out.fa.fai")
     print(eCRE_name," complete")

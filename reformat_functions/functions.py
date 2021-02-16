@@ -7,6 +7,10 @@ def make_directory(dir):
     if not os.path.exists(dir):
         os.mkdir(dir)
 
+def delete_directory(dir):
+    if os.path.exists(dir):
+        shutil.rmtree(dir)
+
 def save_csv(data,filename,**kwargs):
     gene_df = pd.DataFrame(data)
     gene_df.to_csv(filename,**kwargs)
