@@ -512,6 +512,12 @@ class GenomePlot:
         make_directory("results/genome_plots/%s/plots/by_cluster_merge" % eCRE)
         make_directory("results/genome_plots/%s/plots/by_candidate" % eCRE)
 
+        if "_p" in self.eCRE:
+            ##account for two potential eCRE inputs -- Gene_p=0.0xx and Gene
+            self.eCRE_name = self.eCRE.split("_p")[0]
+        else:
+            self.eCRE_name = self.eCRE
+
         self.e_chrom, self.e_start, self.e_end = BedTool("reference/eCRE_locs/%s.bed" % eCRE).to_dataframe().values.ravel()
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
