@@ -43,5 +43,5 @@ for bed_file in bed_files:
     # except:
     #     pass
     os.remove("results/fasta/scrap/out.fa")
-    # os.remove("results/fasta/scrap/out.fai")
+    os.remove("results/fasta/scrap/out.fa.fai")
     print(eCRE_name," complete")
