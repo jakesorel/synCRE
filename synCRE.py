@@ -518,7 +518,7 @@ class GenomePlot:
         else:
             self.eCRE_name = self.eCRE
 
-        self.e_chrom, self.e_start, self.e_end = BedTool("reference/eCRE_locs/%s.bed" % eCRE).to_dataframe().values.ravel()
+        self.e_chrom, self.e_start, self.e_end = BedTool("reference/eCRE_locs/%s.bed" % self.eCRE_name).to_dataframe().values.ravel()
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
         self.bigwigs.columns = ["name", "dir"]
