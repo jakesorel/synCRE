@@ -600,8 +600,13 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
         if self.plot_constructs is True:
             for bdname,bddir in self.bed_files.values:
                 if "#" not in bdname:
+                    f.write("""
+[spacer]
+                    """)
                     f.write(self.make_bed(bdname, bddir,color="black",labels="on",height=0.3))
-
+                    f.write("""
+[spacer]
+                    """)
     def ini_all_motifs(self):
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "all"), 'w')
         self.write_bw(f)
