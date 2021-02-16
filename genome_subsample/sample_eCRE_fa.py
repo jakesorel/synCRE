@@ -29,8 +29,7 @@ from reformat_functions.functions import *
 make_directory("results/fasta")
 make_directory("results/fasta/by_eCRE")
 
-# bed_files = os.listdir("reference/eCRE_locs")
-bed_files = ["Olig2.bed"]
+bed_files = os.listdir("reference/eCRE_locs")
 delete_directory("results/fasta/scrap")
 for bed_file in bed_files:
     make_directory("results/fasta/scrap")
