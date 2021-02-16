@@ -581,6 +581,10 @@ style = UCSC
 pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
         """
 
+        self.runline_template_suppress = """
+pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
+        """
+
     def make_bigwig(self,name, dir, color="#666", height=1.5):
         return self.bigwig_template % (name, dir, name, color, height)
 
@@ -667,10 +671,13 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
         f.write(self.foot)
         f.close()
 
-    def make_runline(self,config_path,plot_path):
-        return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
+    def make_runline(self,config_path,plot_path,suppress=True):
+        if suppress is True:
+            return self.runline_template_suppress%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
+        else:
+            return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
 
-    def make_plots(self,parallel = False):
+    def make_plots(self,parallel = False,suppress = True):
         """
         Makes plots for all avaliable config files
         :return:
@@ -688,7 +695,7 @@ source activate pygenometracks \n
                 config_path = os.path.join(path, name)
                 if ".ini" in config_path:
                     plot_path = config_path.replace("config_files","plots").replace(".ini",".pdf")
-                    runline = self.make_runline(config_path,plot_path)
+                    runline = self.make_runline(config_path,plot_path,suppress=suppress)
                     if parallel is False:
                         script += runline
                     else:
