@@ -8,7 +8,7 @@ from setuptools import setup, Extension
 from os import path
 
 common_includes = ["core/"]
-common_compile_args = ['-march=native', '-O3', '-fPIC', '--std=c++11']
+common_compile_args = ['-march=native', '-O3', '-fPIC', '--std=c++0x']
 
 tools_mod = Extension('MOODS._tools',
                            sources=['core/tools_wrap.cxx',
