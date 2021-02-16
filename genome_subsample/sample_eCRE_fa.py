@@ -26,12 +26,12 @@ sys.path.append(parentdir)
 from reformat_functions.functions import *
 
 make_directory("results/fasta")
-make_directory("results/fasta/scrap")
 make_directory("results/fasta/by_eCRE")
 
 # bed_files = os.listdir("reference/eCRE_locs")
 bed_files = ["Olig2.bed"]
 for bed_file in bed_files:
+    make_directory("results/fasta/scrap")
     eCRE_name = bed_file.split(".bed")[0]
     eCRE = BedTool("reference/eCRE_locs/%s"%bed_file)
     chrom = eCRE.to_dataframe()["chrom"].values[0]
@@ -42,6 +42,7 @@ for bed_file in bed_files:
     eCRE.sequence("results/fasta/scrap/out.fa",fo="results/fasta/by_eCRE/%s.fa"%eCRE_name)
     # except:
     #     pass
-    os.remove("results/fasta/scrap/out.fa")
-    os.remove("results/fasta/scrap/out.fa.fai")
+    os.rmdir("results/fasta/scrap")
+    # os.remove("results/fasta/scrap/out.fa")
+    # os.remove("results/fasta/scrap/out.fa.fai")
     print(eCRE_name," complete")
