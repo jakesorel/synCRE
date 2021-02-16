@@ -497,7 +497,7 @@ python2 moods-dna.py  \
                 adf.to_csv("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),sep="\t",header=None,index=None)
 
 class GenomePlot:
-    def __init__(self,eCRE):
+    def __init__(self,eCRE,plot_constructs=True):
         self.eCRE = eCRE
         make_directory("results/genome_plots")
         make_directory("results/genome_plots/%s" % eCRE)
@@ -522,12 +522,10 @@ class GenomePlot:
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
         self.bigwigs.columns = ["name", "dir"]
-        #
-        # self.eCRE_names = []
-        # for name in os.listdir("reference/eCRE_locs"): ##may be superfluous. Ignores hidden files
-        #     if name[0]!=".":
-        #         self.eCRE_names.append(name)
-        # self.eCRE_names = [name.split(".bed")[0] for name in self.eCRE_names]
+        self.plot_constructs = plot_constructs
+        if plot_constructs is True:
+            self.bed_files = pd.read_csv("reference/bed_files.txt",sep="\t",header=None)
+            self.bed_files.columns = ["name", "dir"]
 
         self.lookup = open_dict("lookup_table/lookup_table")
 
@@ -573,6 +571,7 @@ fontsize = 10
 style = UCSC
         """
 
+
         self.foot = """
 [x-axis]
 [spacer]
@@ -592,11 +591,21 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def ini_all_motifs(self):
-        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "all"), 'w')
+    def write_bw(self,f):
         for bwname, bwdir in self.bigwigs.values:
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir))
+
+    def write_bd(self,f):
+        if self.plot_constructs is True:
+            for bdname,bddir in self.bed_files.values:
+                if "#" not in bdname:
+                    f.write(self.make_bed(bdname, bddir,color="black",labels="on",height=0.3))
+
+    def ini_all_motifs(self):
+        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "all"), 'w')
+        self.write_bw(f)
+        self.write_bd(f)
         f.write(self.make_bed("All archetypes", "results/motifs/bed/%s.bed" % (self.eCRE),
                          height=3))
         f.write(self.foot)
@@ -609,9 +618,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
             cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
             cluster_name = "cluster_%d" % cluster_no
             f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
-            for bwname, bwdir in self.bigwigs.values:
-                if "#" not in bwname:
-                    f.write(self.make_bigwig(bwname, bwdir))
+            self.write_bw(f)
+            self.write_bd(f)
             f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
                              height=3))
             f.write(self.foot)
@@ -624,9 +632,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
             cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
             cluster_name = "cluster_%d" % cluster_no
             f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
-            for bwname, bwdir in self.bigwigs.values:
-                if "#" not in bwname:
-                    f.write(self.make_bigwig(bwname, bwdir))
+            self.write_bw(f)
+            self.write_bd(f)
             archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster_no,
                                        dtype=np.int64)
             for aid in archetype_ids:
@@ -645,9 +652,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
 
         cat = "by_candidate"
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cat), 'w')
-        for bwname, bwdir in self.bigwigs.values:
-            if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir))
+        self.write_bw(f)
+        self.write_bd(f)
         archetype_ids = [self.lookup[gene] for gene in candidate_genes]
         for i, aid in enumerate(archetype_ids):
             f.write(self.make_bed(name="%s (A%d)" % (candidate_genes[i], aid),

@@ -1,0 +1,2 @@
+Oosterveen2012	reference/CRE_info/oosterveen_mm10.bed
+Peterson2012	reference/CRE_info/oosterveen_mm10.bed
