@@ -455,8 +455,7 @@ python2 moods-dna.py  \
                     end.append(en)
                 start, end = np.array(start), np.array(end)
                 begin = df[2].values
-                start += begin
-                end += begin
+                end = start + begin
                 bed_df = pd.DataFrame([chrom, start, end, motif_ids]).transpose()
                 bed_df = bed_df.loc[bed_df[3] != -1]
                 bed_df.to_csv("results/motifs/bed/%s.bed" % (motifcsv.split(".csv")[0]), sep="\t", header=None,
