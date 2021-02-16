@@ -7,7 +7,8 @@ import gzip, shutil
 from sklearn.cluster import KMeans
 from io import StringIO
 from pybedtools import BedTool
-
+import multiprocessing
+from joblib import Parallel, delayed
 
 
 class Lookup:
@@ -436,6 +437,7 @@ python2 moods-dna.py  \
         for motifcsv in motifcsvs:
             if ".csv" in motifcsv:
                 df = pd.read_csv("results/motifs/raw/%s" % motifcsv, sep=";", header=None)
+                seq_len = [len(string) for string in df[5]]
                 locs = df[0]
                 names = df[1].values
                 names = [name.split(".pmf")[0].split(" ")[0] for name in names]
@@ -454,8 +456,8 @@ python2 moods-dna.py  \
                     start.append(st)
                     end.append(en)
                 start, end = np.array(start), np.array(end)
-                begin = df[2].values
-                end = start + begin
+                start += df[2].values
+                end = start + seq_len
                 bed_df = pd.DataFrame([chrom, start, end, motif_ids]).transpose()
                 bed_df = bed_df.loc[bed_df[3] != -1]
                 bed_df.to_csv("results/motifs/bed/%s.bed" % (motifcsv.split(".csv")[0]), sep="\t", header=None,
@@ -657,7 +659,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
     def make_runline(self,config_path,plot_path):
         return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
 
-    def make_plots(self):
+    def make_plots(self,parallel = False):
         """
         Makes plots for all avaliable config files
         :return:
@@ -668,14 +670,24 @@ eval "$(conda shell.bash hook)" \n
 source activate pygenometracks \n
     
         """
+        if parallel is True:
+            scripts = []
         for path, subdirs, files in os.walk("results/genome_plots/%s/config_files"%self.eCRE):
             for name in files:
                 config_path = os.path.join(path, name)
                 if ".ini" in config_path:
                     plot_path = config_path.replace("config_files","plots").replace(".ini",".pdf")
                     runline = self.make_runline(config_path,plot_path)
-                    script += runline
-        os.system(script)
+                    if parallel is False:
+                        script += runline
+                    else:
+                        scripts.append(script+runline)
+
+        if parallel is False:
+            os.system(script)
+        else:
+            num_cores = multiprocessing.cpu_count()
+            Parallel(n_jobs=num_cores)(delayed(os.system)(scriptt) for scriptt in scripts)
 
 def make_directory(dir):
     if not os.path.exists(dir):
