@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import json
+import gzip, shutil
 
 def make_directory(dir):
     if not os.path.exists(dir):
@@ -35,3 +36,8 @@ def standardize_name(name,aliases,true_names=None):
 
 def standardize_names(names,aliases,true_names=None):
     return [standardize_name(name, aliases,true_names) for name in names]
+
+
+def unzip(file,outfile):
+    with gzip.open(file, 'r') as f_in, open(outfile, 'wb') as f_out:
+      shutil.copyfileobj(f_in, f_out)
