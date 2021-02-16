@@ -673,7 +673,7 @@ source activate pygenometracks \n
             for name in files:
                 config_path = os.path.join(path, name)
                 if ".ini" in config_path:
-                    plot_path = config_path.replace("config_files","plots")
+                    plot_path = config_path.replace("config_files","plots").replace(".ini",".pdf")
                     runline = self.make_runline(config_path,plot_path)
                     script += runline
         os.system(script)
