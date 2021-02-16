@@ -473,7 +473,7 @@ python2 moods-dna.py  \
             for archetype in archetypes:
                 beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
 
-    def motifs_by_RNA_cluster(self):
+    def motifs_by_cluster(self):
         archetypes_by_cluster_files = os.listdir("results/expression/archetypes")
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/by_cluster")
