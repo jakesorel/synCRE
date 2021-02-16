@@ -13,5 +13,7 @@ from synCRE import *
 
 plot = GenomePlot("Olig2_p=0.000050")
 plot.ini_all_motifs()
-plot.ini_by_cluster()
-
+# plot.ini_by_cluster()
+# plot.ini_by_cluster_merge()
+# plot.ini_by_candidate()
+plot.make_plots()

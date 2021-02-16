@@ -133,24 +133,24 @@ for name in eCRE_names:
         f.close()  # you can omit in most cases as the destructor will call it
         g.write(make_runline(eCREname=name, cat=cat, filename=cluster_name, chr=e_chrom, start=e_start, end=e_end))
 
-    # cat = "by_cluster"
-    # archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
-    # for archetype_file in archetype_files:
-    #     cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
-    #     cluster_name = "RNA_cluster_%d"%cluster_no
-    #     f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cluster_name), 'w')
-    #     for bwname, bwdir in bigwigs.values:
-    #         if "#" not in bwname:
-    #             f.write(make_bigwig(bwname, bwdir))
-    #     archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt"%cluster_no,dtype=np.int64)
-    #     for aid in archetype_ids:
-    #         f.write(make_bed(name="A%d"%aid, dir="results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed" % (name,name,aid),
-    #                          gene_rows=2))
-    #
-    #     #####^^ list the archetypes for each cluster. Retrieve list from text file. Run the bed formatting for each, setting row_no, export
-    #     f.write(foot)
-    #     f.close()  # you can omit in most cases as the destructor will call it
-    #     g.write(make_runline(eCREname=name, cat=cat, filename=cluster_name, chr=e_chrom, start=e_start, end=e_end))
+    cat = "by_cluster"
+    archetype_files = os.listdir("results/archetype_beds/%s/by_cluster"%name)
+    for archetype_file in archetype_files:
+        cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
+        cluster_name = "RNA_cluster_%d"%cluster_no
+        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (name, cat, cluster_name), 'w')
+        for bwname, bwdir in bigwigs.values:
+            if "#" not in bwname:
+                f.write(make_bigwig(bwname, bwdir))
+        archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt"%cluster_no,dtype=np.int64)
+        for aid in archetype_ids:
+            f.write(make_bed(name="A%d"%aid, dir="results/archetype_beds/%s/by_archetype/%s_archetype_%d.bed" % (name,name,aid),
+                             gene_rows=2))
+
+        #####^^ list the archetypes for each cluster. Retrieve list from text file. Run the bed formatting for each, setting row_no, export
+        f.write(foot)
+        f.close()  # you can omit in most cases as the destructor will call it
+        g.write(make_runline(eCREname=name, cat=cat, filename=cluster_name, chr=e_chrom, start=e_start, end=e_end))
 
     candidate_genes = ["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2"]
 

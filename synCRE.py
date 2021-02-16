@@ -500,7 +500,6 @@ class GenomePlot:
         self.eCRE = eCRE
         make_directory("results/genome_plots")
         make_directory("results/genome_plots/%s" % eCRE)
-        make_directory("results/genome_plots/%s/run_files" % eCRE)
         make_directory("results/genome_plots/%s/config_files" % eCRE)
         make_directory("results/genome_plots/%s/config_files/all" % eCRE)
         make_directory("results/genome_plots/%s/config_files/by_cluster" % eCRE)
@@ -578,6 +577,10 @@ style = UCSC
 [spacer]
         """
 
+        self.runline_template = """
+pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
+        """
+
     def make_bigwig(self,name, dir, color="#666", height=1.5):
         return self.bigwig_template % (name, dir, name, color, height)
 
@@ -598,7 +601,7 @@ style = UCSC
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
-    def ini_by_cluster(self):
+    def ini_by_cluster_merge(self):
         cat = "by_cluster_merge"
         archetype_files = os.listdir("results/motifs/by_cluster/%s" % self.eCRE)
         for archetype_file in archetype_files:
@@ -613,6 +616,67 @@ style = UCSC
             f.write(self.foot)
             f.close()
 
+    def ini_by_cluster(self):
+        cat = "by_cluster"
+        archetype_files = os.listdir("results/motifs/by_cluster/%s" % self.eCRE)
+        for archetype_file in archetype_files:
+            cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
+            cluster_name = "cluster_%d" % cluster_no
+            f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
+            for bwname, bwdir in self.bigwigs.values:
+                if "#" not in bwname:
+                    f.write(self.make_bigwig(bwname, bwdir))
+            archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster_no,
+                                       dtype=np.int64)
+            for aid in archetype_ids:
+                f.write(self.make_bed(name="A%d" % aid,
+                                 dir="results/motifs/by_archetype/%s/archetype_%d.bed" % (self.eCRE, aid),
+                                 gene_rows=2))
+
+            #####^^ list the archetypes for each cluster. Retrieve list from text file. Run the bed formatting for each, setting row_no, export
+            f.write(self.foot)
+            f.close()
+
+
+
+    def ini_by_candidate(self,
+                         candidate_genes=["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2"]):
+
+        cat = "by_candidate"
+        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cat), 'w')
+        for bwname, bwdir in self.bigwigs.values:
+            if "#" not in bwname:
+                f.write(self.make_bigwig(bwname, bwdir))
+        archetype_ids = [self.lookup[gene] for gene in candidate_genes]
+        for i, aid in enumerate(archetype_ids):
+            f.write(self.make_bed(name="%s (A%d)" % (candidate_genes[i], aid),
+                             dir="results/motifs/by_archetype/%s/archetype_%d.bed" % (self.eCRE, aid),
+                             gene_rows=2))
+        f.write(self.foot)
+        f.close()
+
+    def make_runline(self,config_path,plot_path):
+        return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
+
+    def make_plots(self):
+        """
+        Makes plots for all avaliable config files
+        :return:
+        """
+
+        script = """
+eval "$(conda shell.bash hook)" \n
+source activate pygenometracks \n
+    
+        """
+        for path, subdirs, files in os.walk("results/genome_plots/%s/config_files"%self.eCRE):
+            for name in files:
+                config_path = os.path.join(path, name)
+                if ".ini" in config_path:
+                    plot_path = config_path.replace("config_files","plots")
+                    runline = self.make_runline(config_path,plot_path)
+                    script += runline
+        os.system(script)
 
 def make_directory(dir):
     if not os.path.exists(dir):
