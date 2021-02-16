@@ -31,18 +31,3 @@ for memefile in meme_files:
         if "letter-probability matrix" in line:
             pmf_on = True
 
-# jaspar_files_all = os.listdir("jaspar")
-# jaspar_files = []
-# for file in jaspar_files_all:
-#     if ".jaspar" in file:
-#         jaspar_files.append(file)
-# for filenm in jaspar_files:
-#     expt_name = filenm.split(".jaspar")[0] + ".pmf"
-#     f = open("jaspar/%s"%expt_name,"w")
-#     for i, line in enumerate(open("jaspar/%s"%filenm).readlines()):
-#         if i!=0:
-#             f.write(line[6:-2])
-#             f.write("\n")
-#     f.close()
-#     os.remove("jaspar/%s"%filenm)
-#
