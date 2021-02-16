@@ -573,7 +573,7 @@ fontsize = 10
 style = UCSC
         """
 
-        foot = """
+        self.foot = """
 [x-axis]
 [spacer]
         """
