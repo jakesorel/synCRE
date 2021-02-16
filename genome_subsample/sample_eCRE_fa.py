@@ -21,4 +21,5 @@ for bed_file in bed_files:
     unzip(chrfa,"results/fasta/scrap/out.fa")
     olig2fa = eCRE.sequence("results/fasta/scrap/out.fa",fo="results/fasta/by_eCRE/%s.fa"%eCRE_name)
     os.remove("results/fasta/scrap/out.fa")
+    print(eCRE_name," complete")
 
