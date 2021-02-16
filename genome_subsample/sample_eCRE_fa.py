@@ -7,6 +7,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 from reformat_functions.functions import *
 
+
 make_directory("results/fasta")
 make_directory("results/fasta/scrap")
 make_directory("results/fasta/by_eCRE")
