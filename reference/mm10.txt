@@ -1,0 +1,1 @@
+/camp/lab/luscomben/home/shared/ref/genomes/mouse/gencode_GRCm38/chr_sep_files
