@@ -957,6 +957,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         """
         return self.bigwig_template % (name, dir, name, color, negative_color,min_value,height)
 
+
     def make_bed(self,name, dir, color="darkblue", height=0.75, gene_rows=None, labels="off"):
         """
 
@@ -974,7 +975,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,**kwargs):
+    def write_bw(self,f,source_file=None,color="#666"):
         """
 
         :param f:
@@ -984,7 +985,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             source_file = self.bigwigs
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,**kwargs))
+                f.write(self.make_bigwig(bwname, bwdir,color=color))
 
     def write_bedgraph(self,f):
         """
@@ -1024,7 +1025,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bw(f,self.phylo_files,kwargs={"negative_color":"red","color":"green","min_value":"auto"})
+            self.write_bw(f,self.phylo_files,color="green")
             # self.write_bedgraph(f)
         if os.path.exists("results/motifs/bedgraph/%s.bedgraph"%(self.eCRE)):
             f.write(self.bedgraph_template%("All archetypes","results/motifs/bedgraph/%s.bedgraph"%(self.eCRE),"All archetypes"))
