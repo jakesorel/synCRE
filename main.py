@@ -1,6 +1,6 @@
 from synCRE import *
 
-# lkp = Lookup(RNA_seq_file="reference/RNA_seq_local.txt")
+lkp = Lookup(RNA_seq_file="reference/RNA_seq.txt")
 
 # expr = Expression(RNA_seq_file="reference/RNA_seq_local.txt")
 # expr.run_all()
