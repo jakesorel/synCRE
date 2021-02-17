@@ -1016,7 +1016,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             cluster_name = "cluster_%d" % cluster_no
             f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
             self.write_bw(f)
+            f.write(self.genes)
             self.write_bd(f)
+            self.write_bedgraph(f)
             f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
                              height=3))
             f.write(self.foot)
@@ -1034,7 +1036,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             cluster_name = "cluster_%d" % cluster_no
             f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
             self.write_bw(f)
+            f.write(self.genes)
             self.write_bd(f)
+            self.write_bedgraph(f)
             archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster_no,
                                        dtype=np.int64)
             for aid in archetype_ids:
@@ -1056,7 +1060,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         cat = "by_candidate"
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cat), 'w')
         self.write_bw(f)
+        f.write(self.genes)
         self.write_bd(f)
+        self.write_bedgraph(f)
         archetype_ids = [self.lookup[gene] for gene in candidate_genes]
         for i, aid in enumerate(archetype_ids):
             f.write(self.make_bed(name="%s (A%d)" % (candidate_genes[i], aid),
