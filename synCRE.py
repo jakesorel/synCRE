@@ -749,7 +749,7 @@ file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/NCBI/GRCm38/
 # title of track (plotted on the right side)
 title = genes
 # height of track in cm (ignored if the track is overlay on top the previous track)
-height = 2
+height = 1
 # if you want to plot the track upside-down:
 # orientation = inverted
 # if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
@@ -766,9 +766,9 @@ height = 2
 # You can change the color of coding sequences by:
 color = darkblue
 # height of track in cm
-height = 2
+height = 1
 # whether printing the labels
-labels = false
+labels = true
 # optional:
 # by default the labels are not printed if you have more than 60 features.
 # to change it, just increase the value:
