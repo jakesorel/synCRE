@@ -694,6 +694,8 @@ class GenomePlot:
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
         self.bigwigs.columns = ["name", "dir"]
+        self.bed_files = pd.read_csv("reference/phylo_files.txt",sep="\t",header=None)
+        self.bed_files.columns = ["name", "dir"]
         self.plot_constructs = plot_constructs
         if plot_constructs is True:
             self.bed_files = pd.read_csv("reference/bed_files.txt",sep="\t",header=None)
@@ -829,6 +831,86 @@ style = UCSC
 file_type = gtf
         """
 
+        self.bedgraph_template = """
+[%s]
+file = %s
+# title of track (plotted on the right side)
+title = %s
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 1.5
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
+# For the 'share-y' option the y axis values is shared between this plot and the overlay plot.
+# Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+color = green
+# To use a different color for negative values
+negative_color = red
+# To use transparency, you can use alpha
+# default is 1
+# alpha = 0.5
+# the default for min_value and max_value is 'auto' which means that the scale will go
+# roughly from the minimum value found in the region plotted to the maximum value found.
+# min_value = 0
+#max_value = auto
+# to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
+nans_to_zeros = true
+# for type, the options are: line, points, fill. Default is fill
+# to add the preferred line width or point size use:
+# type = line:lw where lw (linewidth) is float
+# similarly points:ms sets the point size (markersize (ms) to the given float
+# type = line:0.5
+# type = points:0.5
+# If you want to plot a 4C track where you want to link
+# the non-missing data (NaNs) together and only use the
+# middle of the region instead of the region itself:
+# Default is false.
+# use_middle = true
+# By default the bedgraph is plotted at the base pair
+# resolution. This can lead to very large pdf/svg files
+# If plotting large regions.
+# If you want to decrase the size of your file.
+# You can either rasterize the bedgraph profile by using:
+# rasterize = true
+# Or use a summary method on a given number of bin:
+# The possible summary methods are given by pyBigWig:
+# mean/average/stdev/dev/max/min/cov/coverage/sum
+# summary_method = mean
+# number_of_bins = 700
+# set show_data_range to false to hide the text on the left showing the data range
+show_data_range = true
+# to compute operations on the fly on the file
+# or between 2 bedgraph files
+# operation will be evaluated, it should contains file or
+# file and second_file,
+# we advice to use nans_to_zeros = true to avoid unexpected nan values
+#operation = 0.89 * file
+#operation = - file
+#operation = file - second_file
+#operation = log2((1 + file) / (1 + second_file))
+#operation = max(file, second_file)
+#second_file = path for the second file
+# To log transform your data you can also use transform and log_pseudocount:
+# For the transform values:
+# 'log1p': transformed_values = log(1 + initial_values)
+# 'log': transformed_values = log(log_pseudocount + initial_values)
+# 'log2': transformed_values = log2(log_pseudocount + initial_values)
+# 'log10': transformed_values = log10(log_pseudocount + initial_values)
+# '-log': transformed_values = log(log_pseudocount + initial_values)
+# For example:
+#tranform = log
+#log_pseudocount = 2
+# When a transformation is applied, by default the y axis
+# gives the transformed values, if you prefer to see
+# the original values:
+#y_axis_values = original
+# If you want to have a grid on the y-axis
+#grid = true
+file_type = bedgraph
+        """
+
         self.foot = """
 [x-axis]
 [spacer]
@@ -879,6 +961,16 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         for bwname, bwdir in self.bigwigs.values:
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir))
+
+    def write_bedgraph(self,f):
+        """
+
+        :param f:
+        :return:
+        """
+        for bgname,bgdir in self.bedgraph.values:
+            if "#" not in bgname:
+                f.write(self.bedgraph_template%(bgname,bgdir,bgname))
 
     def write_bd(self,f):
         """
