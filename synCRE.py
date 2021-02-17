@@ -1024,7 +1024,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bw(f,self.phylo_files,{"negative_color":"red","color":"green","min_value":"auto"})
+            self.write_bw(f,self.phylo_files,kwargs={"negative_color":"red","color":"green","min_value":"auto"})
             # self.write_bedgraph(f)
         if os.path.exists("results/motifs/bedgraph/%s.bedgraph"%(self.eCRE)):
             f.write(self.bedgraph_template%("All archetypes","results/motifs/bedgraph/%s.bedgraph"%(self.eCRE),"All archetypes"))
