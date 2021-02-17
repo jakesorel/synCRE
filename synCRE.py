@@ -43,7 +43,7 @@ class Lookup:
         :return:
         """
         self.find_all_names()
-        self.make_alias_dict()
+        self.alias_dict_generator()
         self.save_aliases()
 
     def find_all_names(self):
@@ -59,7 +59,7 @@ class Lookup:
                 syn_vals = capitalize_list(synonym.split("|"))
                 self.all_names.append([self.true_names[i]] + syn_vals)
 
-    def make_alias_dict(self):
+    def alias_dict_generator(self):
         """
 
         :return:
@@ -115,6 +115,8 @@ class Lookup:
         :return:
         """
         self.load_motif_annotations()
+        self.load_TF_names()
+        self.load_RNA_names()
         self.cluster_ids = self.motifs["Cluster_ID"].values
         self.motif_names = self.motifs["Motif"]
 
@@ -194,17 +196,17 @@ class Lookup:
 
         :return:
         """
-        save_dict(dict(zip(self.motif_names, [int(cid) for cid in self.cluster_ids])), "lookup_table/lookup_table")
+        save_dict(dict(zip(self.motif_names, [int(cid) for cid in self.cluster_ids])), "reference/lookup_table/lookup_table")
 
     def save_not_referenced(self):
         """
 
         :return:
         """
-        make_directory("lookup_table/not_referenced")
-        save_csv(sorted(list(set(self.motif_names).difference(set(self.RNA_names)))),"lookup_table/not_referenced/motifs_not_in_RNA.csv")
-        save_csv(sorted(list(set(self.motif_names).difference(set(self.TF_names)))),"lookup_table/not_referenced/motifs_not_in_TF_list.csv")
-        save_csv(sorted(list(set(self.TF_names).difference(set(self.motif_names)))),"lookup_table/not_referenced/TFs_not_in_motif_list.csv")
+        make_directory("reference/lookup_table/not_referenced")
+        save_csv(sorted(list(set(self.motif_names).difference(set(self.RNA_names)))),"reference/lookup_table/not_referenced/motifs_not_in_RNA.csv")
+        save_csv(sorted(list(set(self.motif_names).difference(set(self.TF_names)))),"reference/lookup_table/not_referenced/motifs_not_in_TF_list.csv")
+        save_csv(sorted(list(set(self.TF_names).difference(set(self.motif_names)))),"reference/lookup_table/not_referenced/TFs_not_in_motif_list.csv")
 
 
 class Expression:
@@ -226,9 +228,9 @@ class Expression:
         make_directory("results/expression/archetypes")
 
         ##Load lookup table
-        self.aliases = open_dict("lookup_table/aliases")
+        self.aliases = open_dict("reference/lookup_table/aliases")
         self.true_names = self.aliases.values()
-        self.lookup = open_dict("lookup_table/lookup_table")
+        self.lookup = open_dict("reference/lookup_table/lookup_table")
         self.gene_names = list(self.lookup.keys())
 
         ##Load RNA_seq_file
@@ -701,7 +703,7 @@ class GenomePlot:
             self.bed_files = pd.read_csv("reference/bed_files.txt",sep="\t",header=None)
             self.bed_files.columns = ["name", "dir"]
 
-        self.lookup = open_dict("lookup_table/lookup_table")
+        self.lookup = open_dict("reference/lookup_table/lookup_table")
 
         self.bigwig_template = """
 [%s]
@@ -989,7 +991,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
                     f.write("""
 [spacer]
                     """)
-    def ini_all_motifs(self):
+    def ini_all_motifs(self,phylo=False):
         """
 
         :return:
@@ -998,13 +1000,14 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         self.write_bw(f)
         f.write(self.genes)
         self.write_bd(f)
-        self.write_bedgraph(f)
+        if phylo is True:
+            self.write_bedgraph(f)
         f.write(self.make_bed("All archetypes", "results/motifs/bed/%s.bed" % (self.eCRE),
                          height=3))
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
-    def ini_by_cluster_merge(self):
+    def ini_by_cluster_merge(self,phylo=False):
         """
 
         :return:
@@ -1018,13 +1021,14 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             self.write_bw(f)
             f.write(self.genes)
             self.write_bd(f)
-            self.write_bedgraph(f)
+            if phylo is True:
+                self.write_bedgraph(f)
             f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
                              height=3))
             f.write(self.foot)
             f.close()
 
-    def ini_by_cluster(self):
+    def ini_by_cluster(self,phylo=False):
         """
 
         :return:
@@ -1038,7 +1042,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             self.write_bw(f)
             f.write(self.genes)
             self.write_bd(f)
-            self.write_bedgraph(f)
+            if phylo is True:
+                self.write_bedgraph(f)
             archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster_no,
                                        dtype=np.int64)
             for aid in archetype_ids:
@@ -1051,7 +1056,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
 
 
     def ini_by_candidate(self,
-                         candidate_genes=["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2"]):
+                         candidate_genes=["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2","Gli3"],phylo=False):
         """
 
         :param candidate_genes:
@@ -1062,7 +1067,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         self.write_bw(f)
         f.write(self.genes)
         self.write_bd(f)
-        self.write_bedgraph(f)
+        if phylo is True:
+            self.write_bedgraph(f)
         archetype_ids = [self.lookup[gene] for gene in candidate_genes]
         for i, aid in enumerate(archetype_ids):
             f.write(self.make_bed(name="%s (A%d)" % (candidate_genes[i], aid),
