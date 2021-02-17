@@ -745,8 +745,7 @@ style = UCSC
 
         self.genes = """
         [genes]
-file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf
-
+file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/NCBI/GRCm38/Annotation/Genes/genes.gtf
 # title of track (plotted on the right side)
 title = genes
 # height of track in cm (ignored if the track is overlay on top the previous track)
