@@ -694,8 +694,8 @@ class GenomePlot:
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
         self.bigwigs.columns = ["name", "dir"]
-        self.bed_files = pd.read_csv("reference/phylo_files.txt",sep="\t",header=None)
-        self.bed_files.columns = ["name", "dir"]
+        self.bedgraph_files = pd.read_csv("reference/phylo_files.txt",sep="\t",header=None)
+        self.bedgraph_files.columns = ["name", "dir"]
         self.plot_constructs = plot_constructs
         if plot_constructs is True:
             self.bed_files = pd.read_csv("reference/bed_files.txt",sep="\t",header=None)
@@ -968,7 +968,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param f:
         :return:
         """
-        for bgname,bgdir in self.bed_files.values:
+        for bgname,bgdir in self.bedgraph_files.values:
             if "#" not in bgname:
                 f.write(self.bedgraph_template%(bgname,bgdir,bgname))
 
