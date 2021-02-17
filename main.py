@@ -3,7 +3,7 @@ from synCRE import *
 ##############################
 # Make the lookup table
 ##############################
-lkp = Lookup(RNA_seq_file="reference/RNA_seq_local.txt")
+lkp = Lookup(RNA_seq_file="reference/RNA_seq.txt")
 
 
 # expr = Expression(RNA_seq_file="reference/RNA_seq_local.txt")
@@ -25,7 +25,7 @@ for eCRE in eCREs_all:
     if "p=0.000100" in eCRE:
         eCREs.append(eCRE)
 for eCRE in eCREs:
-    eCRE = "Nkx2-2_p=0.001000"
+    # eCRE = "Nkx2-2_p=0.001000"
     # eCRE = eCREs[0]
     plot = GenomePlot(eCRE)
     plot.ini_all_motifs(phylo=True)
