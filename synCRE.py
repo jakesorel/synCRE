@@ -744,8 +744,8 @@ style = UCSC
         """
 
         self.genes = """
-        [genes]
-file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/NCBI/GRCm38/Annotation/Genes/genes.bed
+[genes]
+file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/NCBI/GRCm38/Annotation/Genes/genes.gtf
 # title of track (plotted on the right side)
 title = genes
 # height of track in cm (ignored if the track is overlay on top the previous track)
@@ -766,7 +766,7 @@ height = 2
 # You can change the color of coding sequences by:
 color = darkblue
 # height of track in cm
-height = 5
+height = 2
 # whether printing the labels
 labels = false
 # optional:
@@ -826,7 +826,7 @@ style = UCSC
 # the extremity of the interval use:
 # arrowhead_included = true
 # optional. If not given is guessed from the file ending.
-file_type = bed
+file_type = gtf
         """
 
         self.foot = """

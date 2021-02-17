@@ -15,7 +15,8 @@ print("motifs found")
 
 eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
 # for eCRE in eCREs:
-eCRE = eCREs[0]
+eCRE = "Nkx2-2_p=0.001000"
+# eCRE = eCREs[0]
 plot = GenomePlot(eCRE)
 plot.ini_all_motifs()
 # plot.ini_by_cluster()
