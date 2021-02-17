@@ -620,8 +620,16 @@ python2 moods-dna.py  \
 
                 ##sort bedfile
                 os.system("""
-sort -k2,2 results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed 
+sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed 
                 """% (motifcsv.split(".csv")[0],motifcsv.split(".csv")[0]))
+
+    def motifs_to_bedgraph(self):
+        bedfiles = os.listdir("results/motifs/bed")
+        make_directory("results/motifs/bedgraph")
+        for bedfile in bedfiles:
+            eCRE_name = bedfile.split(".bed")[0]
+            bedgraph_name = eCRE_name + ".bedgraph"
+            bed_to_bedgraph("results/motifs/bed/%s"%bedfile,"results/motifs/bedgraph/%s"%bedgraph_name)
 
     def motifs_by_archetype(self):
         """
@@ -637,7 +645,7 @@ sort -k2,2 results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
             for archetype in range(1,287):
                 beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
 
-    def motifs_by_cluster(self):
+    def motifs_by_cluster(self,make_bedgraph=True):
         """
 
         :return:
@@ -663,14 +671,17 @@ sort -k2,2 results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
                         a = 1
                 adf.to_csv("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),sep="\t",header=None,index=None)
                 os.system("""
-sort -k2,2 results/motifs/by_cluster/%s/cluster_%d.bed -o results/motifs/by_cluster/%s/cluster_%d.bed
+sort -k2,2n -k3,3n results/motifs/by_cluster/%s/cluster_%d.bed -o results/motifs/by_cluster/%s/cluster_%d.bed
                 """%(bedname,cluster_id,bedname,cluster_id))
+                if make_bedgraph:
+                    bed_to_bedgraph("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),"results/motifs/by_cluster/%s/cluster_%d.bedgraph"%(bedname,cluster_id))
+
 
 class GenomePlot:
     """
 
     """
-    def __init__(self,eCRE,plot_constructs=True,clean_configs=True):
+    def __init__(self,eCRE,plot_constructs=True,clean_configs=True,plot_bw=True,plot_genes=True,plot_phylo=True):
         self.eCRE = eCRE
         make_directory("results/genome_plots")
         make_directory("results/genome_plots/%s" % eCRE)
@@ -698,9 +709,12 @@ class GenomePlot:
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
         self.bigwigs.columns = ["name", "dir"]
-        self.bedgraph_files = pd.read_csv("reference/phylo_files.txt",sep="\t",header=None)
-        self.bedgraph_files.columns = ["name", "dir"]
+        self.phylo_files = pd.read_csv("reference/phylo_files.txt",sep="\t",header=None)
+        self.phylo_files.columns = ["name", "dir"]
         self.plot_constructs = plot_constructs
+        self.plot_genes = plot_genes
+        self.plot_bw = plot_bw
+        self.plot_phylo = plot_phylo
         if plot_constructs is True:
             self.bed_files = pd.read_csv("reference/bed_files.txt",sep="\t",header=None)
             self.bed_files.columns = ["name", "dir"]
@@ -740,6 +754,7 @@ style = UCSC
 file=%s
 title=%s
 color = %s
+negative_color = %s
 height = %.3f
 # line_width = 0.5
 # gene_rows = 2
@@ -748,6 +763,8 @@ file_type = bed
 fontsize = 10
 style = UCSC
         """
+
+
 
         self.genes = """
 [spacer]
@@ -929,7 +946,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
 pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         """
 
-    def make_bigwig(self,name, dir, color="#666", height=1.5):
+    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5):
         """
 
         :param name:
@@ -938,7 +955,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param height:
         :return:
         """
-        return self.bigwig_template % (name, dir, name, color, height)
+        return self.bigwig_template % (name, dir, name, color, negative_color,height)
 
     def make_bed(self,name, dir, color="darkblue", height=0.75, gene_rows=None, labels="off"):
         """
@@ -957,15 +974,17 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f):
+    def write_bw(self,f,source_file=None,kwargs = None):
         """
 
         :param f:
         :return:
         """
-        for bwname, bwdir in self.bigwigs.values:
+        if source_file is None:
+            source_file = self.bigwigs.values
+        for bwname, bwdir in source_file:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir))
+                f.write(self.make_bigwig(bwname, bwdir,**kwargs))
 
     def write_bedgraph(self,f):
         """
@@ -983,33 +1002,39 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param f:
         :return:
         """
-        if self.plot_constructs is True:
-            for bdname,bddir in self.bed_files.values:
-                if "#" not in bdname:
-                    f.write("""
+        for bdname,bddir in self.bed_files.values:
+            if "#" not in bdname:
+                f.write("""
 [spacer]
-                    """)
-                    f.write(self.make_bed(bdname, bddir,color="black",labels="on",height=0.3))
-                    f.write("""
+                """)
+                f.write(self.make_bed(bdname, bddir,color="black",labels="on",height=0.3))
+                f.write("""
 [spacer]
-                    """)
-    def ini_all_motifs(self,phylo=False):
+                """)
+    def ini_all_motifs(self):
         """
 
         :return:
         """
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "all"), 'w')
-        self.write_bw(f)
-        f.write(self.genes)
-        self.write_bd(f)
-        if phylo is True:
-            self.write_bedgraph(f)
-        f.write(self.make_bed("All archetypes", "results/motifs/bed/%s.bed" % (self.eCRE),
-                         height=3))
+        if self.plot_bw:
+            self.write_bw(f)
+        if self.plot_genes:
+            f.write(self.genes)
+        if self.plot_constructs:
+            self.write_bd(f)
+        if self.plot_phylo:
+            self.write_bw(f,self.phylo_files,{"negative_color":"red","color":"green"})
+            # self.write_bedgraph(f)
+        if os.path.exists("results/motifs/bedgraph/%s.bedgraph"%(self.eCRE)):
+            f.write(self.bedgraph_template%("All archetypes","results/motifs/bedgraph/%s.bedgraph"%(self.eCRE),"All archetypes"))
+        else:
+            f.write(self.make_bed("All archetypes", "results/motifs/bed/%s.bed" % (self.eCRE),
+                             height=3))
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
-    def ini_by_cluster_merge(self,phylo=False):
+    def ini_by_cluster_merge(self):
         """
 
         :return:
@@ -1020,17 +1045,25 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
             cluster_name = "cluster_%d" % cluster_no
             f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
-            self.write_bw(f)
-            f.write(self.genes)
-            self.write_bd(f)
-            if phylo is True:
+            if self.plot_bw:
+                self.write_bw(f)
+            if self.plot_genes:
+                f.write(self.genes)
+            if self.plot_constructs:
+                self.write_bd(f)
+            if self.plot_phylo:
                 self.write_bedgraph(f)
-            f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
-                             height=3))
+            bedgraph_name = "results/motifs/by_cluster/%s/%s"%(self.eCRE,archetype_file).split(".bed")[0] + ".bedfile"
+            if os.path.exists("results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name)):
+                f.write(self.bedgraph_template % (
+                cluster_name, "results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name), cluster_name))
+            else:
+                f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
+                                 height=3))
             f.write(self.foot)
             f.close()
 
-    def ini_by_cluster(self,phylo=False):
+    def ini_by_cluster(self):
         """
 
         :return:
@@ -1041,10 +1074,13 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
             cluster_name = "cluster_%d" % cluster_no
             f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
-            self.write_bw(f)
-            f.write(self.genes)
-            self.write_bd(f)
-            if phylo is True:
+            if self.plot_bw:
+                self.write_bw(f)
+            if self.plot_genes:
+                f.write(self.genes)
+            if self.plot_constructs:
+                self.write_bd(f)
+            if self.plot_phylo:
                 self.write_bedgraph(f)
             archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster_no,
                                        dtype=np.int64)
@@ -1058,7 +1094,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
 
 
     def ini_by_candidate(self,
-                         candidate_genes=["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2","Gli3"],phylo=False):
+                         candidate_genes=["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2","Gli3"]):
         """
 
         :param candidate_genes:
@@ -1066,10 +1102,13 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         """
         cat = "by_candidate"
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cat), 'w')
-        self.write_bw(f)
-        f.write(self.genes)
-        self.write_bd(f)
-        if phylo is True:
+        if self.plot_bw:
+            self.write_bw(f)
+        if self.plot_genes:
+            f.write(self.genes)
+        if self.plot_constructs:
+            self.write_bd(f)
+        if self.plot_phylo:
             self.write_bedgraph(f)
         archetype_ids = [self.lookup[gene] for gene in candidate_genes]
         for i, aid in enumerate(archetype_ids):
@@ -1224,3 +1263,11 @@ def unzip(file,outfile):
     """
     with gzip.open(file, 'r') as f_in, open(outfile, 'wb') as f_out:
       shutil.copyfileobj(f_in, f_out)
+
+def bed_to_bedgraph(input,output,genome="mm10"):
+    """
+
+    :return:
+    """
+    BedTool(input).genomecov(bg=True,genome=genome).saveas(output)
+    print("Converted",input,"to",output)

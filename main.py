@@ -14,14 +14,18 @@ from synCRE import *
 ##############################
 # Find motifs within each eCRE
 ##############################
-mtf = Motif_Finder()
+# mtf = Motif_Finder()
 # mtf.make_pmf()
 # mtf.sample_eCRE_sequence()
 # mtf.find_motifs([0.001])
-mtf.motif_to_bed()
+# mtf.motif_to_bed()
+# mtf.motifs_to_bedgraph()
 # mtf.motifs_by_archetype()
-# mtf.motifs_by_cluster()
+# mtf.motifs_by_cluster(make_bedgraph=False)
 
+# bed = BedTool("results/motifs/bed/Pax6_p=0.000100.bed")
+# start = bed.to_dataframe()["start"].values
+# print((start[1:] - start[:-1]).min())
 print("motifs found")
 
 ##############################
@@ -35,12 +39,12 @@ for eCRE in eCREs_all:
 for eCRE in eCREs:
     # eCRE = "Nkx2-2_p=0.001000"
     # eCRE = eCREs[0]
-    plot = GenomePlot(eCRE)
-    plot.ini_all_motifs(phylo=False)
+    plot = GenomePlot(eCRE,plot_bw=False,plot_genes=False,plot_constructs=False,plot_phylo=False)
+    plot.ini_all_motifs()
     # plot.ini_by_cluster()
     # plot.ini_by_cluster_merge()
     # plot.ini_by_candidate()
-    plot.make_plots(parallel=True,suppress=True)
+    plot.make_plots(parallel=True,suppress=False)
     print("""
 ################################################
 Plots for %s complete
