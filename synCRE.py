@@ -19,7 +19,7 @@ class Lookup:
                  TF_list="reference/TF_list.csv",
                  RNA_seq_file="reference/RNA_seq.txt",
                  motif_annotations="reference/motif_annotations.xlsx",
-                 manual_addition_file="lookup_table/manual_additions.csv"):
+                 manual_addition_file="reference/manual_additions.csv"):
 
         self.gene_info = gene_info
         self.TF_list = TF_list
@@ -83,7 +83,7 @@ class Lookup:
         :return:
         """
         self.TF_names = list(pd.read_csv(self.TF_list,header=None)[0].values)
-        self.standardize_names(self.TF_names)
+        self.TF_names = self.standardize_names(self.TF_names)
 
     def load_RNA_names(self):
         """
@@ -91,7 +91,7 @@ class Lookup:
         :return:
         """
         self.RNA_names = list(pd.read_csv(open(self.RNA_seq_file).read(), index_col=0).index)
-        self.standardize_names(self.RNA_names)
+        self.RNA_names = self.standardize_names(self.RNA_names)
 
     def standardize_names(self,names):
         """
@@ -99,8 +99,7 @@ class Lookup:
         :param names:
         :return:
         """
-        names = standardize_names(names, self.aliases, self.true_names)
-        return names
+        return standardize_names(names, self.aliases, self.true_names)
 
     def load_motif_annotations(self):
         """
@@ -123,7 +122,7 @@ class Lookup:
         self.split_doubles()
         self.reformat_names()
         self.fix_Znf()
-        self.standardize_names(self.motif_names)
+        self.motif_names = self.standardize_names(self.motif_names)
         self.fix_manual_additions()
         self.de_duplicate()
 
