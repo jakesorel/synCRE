@@ -39,7 +39,7 @@ for eCRE in eCREs_all:
 for eCRE in eCREs:
     # eCRE = "Nkx2-2_p=0.001000"
     # eCRE = eCREs[0]
-    plot = GenomePlot(eCRE,plot_bw=False,plot_genes=False,plot_constructs=False,plot_phylo=False)
+    plot = GenomePlot(eCRE)
     plot.ini_all_motifs()
     # plot.ini_by_cluster()
     # plot.ini_by_cluster_merge()
