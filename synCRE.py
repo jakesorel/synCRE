@@ -997,6 +997,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         self.write_bw(f)
         f.write(self.genes)
         self.write_bd(f)
+        self.write_bedgraph(f)
         f.write(self.make_bed("All archetypes", "results/motifs/bed/%s.bed" % (self.eCRE),
                          height=3))
         f.write(self.foot)
