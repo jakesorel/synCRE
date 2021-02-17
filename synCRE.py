@@ -726,7 +726,8 @@ class GenomePlot:
 file=%s
 title=%s
 color = %s
-min_value = 0
+negative_color=%s
+min_value = %.3f
 #max_value = auto
 height = %.3f
 number of bins = 500
@@ -754,7 +755,6 @@ style = UCSC
 file=%s
 title=%s
 color = %s
-negative_color = %s
 height = %.3f
 # line_width = 0.5
 # gene_rows = 2
@@ -946,7 +946,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
 pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         """
 
-    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5):
+    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0):
         """
 
         :param name:
@@ -955,7 +955,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param height:
         :return:
         """
-        return self.bigwig_template % (name, dir, name, color, negative_color,height)
+        return self.bigwig_template % (name, dir, name, color, negative_color,min_value,height)
 
     def make_bed(self,name, dir, color="darkblue", height=0.75, gene_rows=None, labels="off"):
         """
@@ -1024,7 +1024,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bw(f,self.phylo_files,{"negative_color":"red","color":"green"})
+            self.write_bw(f,self.phylo_files,{"negative_color":"red","color":"green","min_value":"auto"})
             # self.write_bedgraph(f)
         if os.path.exists("results/motifs/bedgraph/%s.bedgraph"%(self.eCRE)):
             f.write(self.bedgraph_template%("All archetypes","results/motifs/bedgraph/%s.bedgraph"%(self.eCRE),"All archetypes"))
