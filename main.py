@@ -34,9 +34,9 @@ Plots for %s complete
 To do:
 
 -- sort bed files - DONE
--- include genes in plots
+-- include genes in plots -- DONE
 -- add colours to the plots (via the input file)
--- include conservation in plots
+-- include conservation in plots -- DONE
 -- check lookup class works
 -- clean directory
 -- documentation
