@@ -968,7 +968,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param f:
         :return:
         """
-        for bgname,bgdir in self.bedgraph.values:
+        for bgname,bgdir in self.bed_files.values:
             if "#" not in bgname:
                 f.write(self.bedgraph_template%(bgname,bgdir,bgname))
 
