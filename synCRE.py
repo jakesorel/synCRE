@@ -981,8 +981,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :return:
         """
         if source_file is None:
-            source_file = self.bigwigs.values
-        for bwname, bwdir in source_file:
+            source_file = self.bigwigs
+        for bwname, bwdir in source_file.values:
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir,**kwargs))
 
