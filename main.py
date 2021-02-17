@@ -5,33 +5,28 @@ from synCRE import *
 ##############################
 # lkp = Lookup(RNA_seq_file="reference/RNA_seq.txt")
 
-
+##############################
+# Cluster RNA expression
+##############################
 # expr = Expression(RNA_seq_file="reference/RNA_seq_local.txt")
 # expr.run_all()
 
+##############################
+# Find motifs within each eCRE
+##############################
 mtf = Motif_Finder()
 # mtf.make_pmf()
 # mtf.sample_eCRE_sequence()
 # mtf.find_motifs([0.001])
 mtf.motif_to_bed()
-mtf.motifs_by_archetype()
-mtf.motifs_by_cluster()
-
-# os.system("pwd")
-# os.system("""
-# sort -k2 results/motifs/by_cluster/Nkx2-2_p=0.000050/cluster_0.bed -o results/motifs/by_cluster/Nkx2-2_p=0.000050/cluster_0.bed
-# """)
-#
-# bed_file = BedTool("results/motifs/by_cluster/Nkx2-2_p=0.000050/cluster_0.bed")
-# start = bed_file.to_dataframe()["start"].values
-# # arg_sort = bed_file.to_dataframe()["start"].values.argsort()
-# # arg_sort = .argsort()
-# plt.plot(start)
-# # plt.plot(arg_sort[1:] - arg_sort[:-1])
-# plt.show()
+# mtf.motifs_by_archetype()
+# mtf.motifs_by_cluster()
 
 print("motifs found")
 
+##############################
+# Plot data
+##############################
 eCREs_all = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
 eCREs = []
 for eCRE in eCREs_all:
@@ -43,8 +38,8 @@ for eCRE in eCREs:
     plot = GenomePlot(eCRE)
     plot.ini_all_motifs(phylo=False)
     # plot.ini_by_cluster()
-    plot.ini_by_cluster_merge()
-    plot.ini_by_candidate()
+    # plot.ini_by_cluster_merge()
+    # plot.ini_by_candidate()
     plot.make_plots(parallel=True,suppress=True)
     print("""
 ################################################

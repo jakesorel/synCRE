@@ -620,7 +620,7 @@ python2 moods-dna.py  \
 
                 ##sort bedfile
                 os.system("""
-sort -k2 results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed 
+sort -k2,2 results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed 
                 """% (motifcsv.split(".csv")[0],motifcsv.split(".csv")[0]))
 
     def motifs_by_archetype(self):
@@ -663,7 +663,7 @@ sort -k2 results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
                         a = 1
                 adf.to_csv("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),sep="\t",header=None,index=None)
                 os.system("""
-sort -k2 results/motifs/by_cluster/%s/cluster_%d.bed -o results/motifs/by_cluster/%s/cluster_%d.bed
+sort -k2,2 results/motifs/by_cluster/%s/cluster_%d.bed -o results/motifs/by_cluster/%s/cluster_%d.bed
                 """%(bedname,cluster_id,bedname,cluster_id))
 
 class GenomePlot:
