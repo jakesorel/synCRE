@@ -19,9 +19,9 @@ eCRE = "Nkx2-2_p=0.001000"
 # eCRE = eCREs[0]
 plot = GenomePlot(eCRE)
 plot.ini_all_motifs()
-plot.ini_by_cluster()
-plot.ini_by_cluster_merge()
-plot.ini_by_candidate()
+# plot.ini_by_cluster()
+# plot.ini_by_cluster_merge()
+# plot.ini_by_candidate()
 plot.make_plots(parallel=True,suppress=False)
 print("""
 ################################################
