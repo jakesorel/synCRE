@@ -46,7 +46,7 @@ for eCRE in eCREs:
     plot.ini_by_cluster()
     plot.ini_by_cluster_merge()
     plot.ini_by_candidate()
-    plot.make_plots(parallel=True,suppress=False)
+    plot.make_plots(parallel=True,suppress=True)
     print("""
 ################################################
 Plots for %s complete
