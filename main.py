@@ -31,19 +31,21 @@ print("motifs found")
 ##############################
 # Plot data
 ##############################
-eCREs_all = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
-eCREs = []
-for eCRE in eCREs_all:
-    if "p=0.000100" in eCRE:
-        eCREs.append(eCRE)
+# eCREs_all = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
+# eCREs = []
+# for eCRE in eCREs_all:
+#     if "p=0.000100" in eCRE:
+#         eCREs.append(eCRE)
+eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
+
 for eCRE in eCREs:
     # eCRE = "Nkx2-2_p=0.001000"
     # eCRE = eCREs[0]
     plot = GenomePlot(eCRE)
     plot.ini_all_motifs()
-    # plot.ini_by_cluster()
-    # plot.ini_by_cluster_merge()
-    # plot.ini_by_candidate()
+    plot.ini_by_cluster()
+    plot.ini_by_cluster_merge()
+    plot.ini_by_candidate()
     plot.make_plots(parallel=True,suppress=False)
     print("""
 ################################################

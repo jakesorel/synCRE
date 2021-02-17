@@ -975,7 +975,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,color="#666"):
+    def write_bw(self,f,source_file=None,color="#666",min_value = 0):
         """
 
         :param f:
@@ -985,7 +985,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             source_file = self.bigwigs
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=color))
+                f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value))
 
     def write_bedgraph(self,f):
         """
@@ -1025,7 +1025,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bw(f,self.phylo_files,color="green")
+            self.write_bw(f,self.phylo_files,color="green",min_value="auto")
             # self.write_bedgraph(f)
         if os.path.exists("results/motifs/bedgraph/%s.bedgraph"%(self.eCRE)):
             f.write(self.bedgraph_template%("All archetypes","results/motifs/bedgraph/%s.bedgraph"%(self.eCRE),"All archetypes"))
@@ -1053,7 +1053,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             if self.plot_constructs:
                 self.write_bd(f)
             if self.plot_phylo:
-                self.write_bedgraph(f)
+                self.write_bw(f, self.phylo_files, color="green", min_value="auto")
             bedgraph_name = "results/motifs/by_cluster/%s/%s"%(self.eCRE,archetype_file).split(".bed")[0] + ".bedfile"
             if os.path.exists("results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name)):
                 f.write(self.bedgraph_template % (
@@ -1082,7 +1082,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             if self.plot_constructs:
                 self.write_bd(f)
             if self.plot_phylo:
-                self.write_bedgraph(f)
+                self.write_bw(f, self.phylo_files, color="green", min_value="auto")
             archetype_ids = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster_no,
                                        dtype=np.int64)
             for aid in archetype_ids:
@@ -1110,7 +1110,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bedgraph(f)
+            self.write_bw(f,self.phylo_files,color="green",min_value="auto")
         archetype_ids = [self.lookup[gene] for gene in candidate_genes]
         for i, aid in enumerate(archetype_ids):
             f.write(self.make_bed(name="%s (A%d)" % (candidate_genes[i], aid),
