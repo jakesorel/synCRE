@@ -14,17 +14,30 @@ mtf.motifs_by_cluster()
 print("motifs found")
 
 eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
-for eCRE in eCREs:
-    plot = GenomePlot(eCRE)
-    plot.ini_all_motifs()
-    plot.ini_by_cluster()
-    plot.ini_by_cluster_merge()
-    plot.ini_by_candidate()
-    plot.make_plots(parallel=True,suppress=True)
-    print("""
+# for eCRE in eCREs:
+eCRE = eCREs[0]
+plot = GenomePlot(eCRE)
+plot.ini_all_motifs()
+# plot.ini_by_cluster()
+# plot.ini_by_cluster_merge()
+# plot.ini_by_candidate()
+plot.make_plots(parallel=True,suppress=True)
+print("""
 ################################################
 Plots for %s complete
 ################################################
-    """%eCRE)
+"""%eCRE)
 
 
+"""
+To do:
+
+-- sort bed files - DONE
+-- include genes in plots
+-- add colours to the plots (via the input file)
+-- include conservation in plots
+-- check lookup class works
+-- clean directory
+-- documentation
+
+"""

@@ -12,6 +12,9 @@ from joblib import Parallel, delayed
 
 
 class Lookup:
+    """
+
+    """
     def __init__(self,gene_info="reference/gene_info",
                  TF_list="reference/TF_list.csv",
                  RNA_seq_file="reference/RNA_seq.txt",
@@ -75,21 +78,42 @@ class Lookup:
         save_dict(self.aliases, "reference/lookup_table/aliases")
 
     def load_TF_names(self):
+        """
+
+        :return:
+        """
         self.TF_names = list(pd.read_csv(self.TF_list,header=None)[0].values)
         self.standardize_names(self.TF_names)
 
     def load_RNA_names(self):
+        """
+
+        :return:
+        """
         self.RNA_names = list(pd.read_csv(open(self.RNA_seq_file).read(), index_col=0).index)
         self.standardize_names(self.RNA_names)
 
     def standardize_names(self,names):
+        """
+
+        :param names:
+        :return:
+        """
         names = standardize_names(names, self.aliases, self.true_names)
         return names
 
     def load_motif_annotations(self):
+        """
+
+        :return:
+        """
         self.motifs = pd.read_excel(self.motif_annotations, 1, engine='openpyxl')
 
     def make_lookup(self):
+        """
+
+        :return:
+        """
         self.load_motif_annotations()
         self.cluster_ids = self.motifs["Cluster_ID"].values
         self.motif_names = self.motifs["Motif"]
@@ -103,6 +127,10 @@ class Lookup:
 
 
     def split_doubles(self):
+        """
+
+        :return:
+        """
         motif_names_old, cluster_ids_old = self.motif_names.copy(), self.cluster_ids.copy()
         motif_names, cluster_ids = [], []
         for i, name in enumerate(motif_names_old):
@@ -117,11 +145,19 @@ class Lookup:
         self.motif_names,self.cluster_ids = motif_names,cluster_ids
 
     def fix_Znf(self):
+        """
+
+        :return:
+        """
         for i, motif in enumerate(self.motif_names):
             if ("Zn" in motif) & ("Znf" not in motif):
                 self.motif_names[i] = "Znf" + motif.split("Zn")[1]
 
     def fix_manual_additions(self):
+        """
+
+        :return:
+        """
         manual_df = pd.read_csv(self.manual_addition_file, index_col=0)
         manual_dict = dict(zip(manual_df.Name, manual_df.New_name))
         orig_names = manual_df.Name.values
@@ -130,6 +166,10 @@ class Lookup:
                 self.motif_names[i] = manual_dict[motif]
 
     def de_duplicate(self):
+        """
+
+        :return:
+        """
         motif_names_old, cluster_ids_old = np.array(self.motif_names), np.array(self.cluster_ids)
         motif_names, cluster_ids = [], []
         for cluster_id in np.unique(cluster_ids_old):
@@ -141,14 +181,26 @@ class Lookup:
         self.motif_names,self.cluster_ids = motif_names,cluster_ids
 
     def reformat_names(self):
+        """
+
+        :return:
+        """
         for i, name in enumerate(self.motif_names):
             self.motif_names[i] = name.split("_")[0]
             self.motif_names[i] = self.motif_names[i].split(".")[0].capitalize()
 
     def save_lookup(self):
+        """
+
+        :return:
+        """
         save_dict(dict(zip(self.motif_names, [int(cid) for cid in self.cluster_ids])), "lookup_table/lookup_table")
 
     def save_not_referenced(self):
+        """
+
+        :return:
+        """
         make_directory("lookup_table/not_referenced")
         save_csv(sorted(list(set(self.motif_names).difference(set(self.RNA_names)))),"lookup_table/not_referenced/motifs_not_in_RNA.csv")
         save_csv(sorted(list(set(self.motif_names).difference(set(self.TF_names)))),"lookup_table/not_referenced/motifs_not_in_TF_list.csv")
@@ -156,6 +208,9 @@ class Lookup:
 
 
 class Expression:
+    """
+
+    """
     def __init__(self,RNA_seq_file="reference/RNA_seq.txt",n_clusters=8,
                  candidate_genes=["Nkx2-2", "Olig2", "Pax6", "Irx3", "Gli3", "Sox2", "Cdx1", "Cdx2"]):
         self.RNA_seq_file = RNA_seq_file
@@ -182,6 +237,10 @@ class Expression:
         self.RNA_df["all"].index = self.standardize_names(self.RNA_df["all"].index)
 
     def run_all(self):
+        """
+
+        :return:
+        """
         self.build_z()
         self.calculate_k_means()
         self.save_outputs()
@@ -189,6 +248,12 @@ class Expression:
         self.plot_clusters()
 
     def build_z(self,percentile=25,fc_thresh=0.25):
+        """
+
+        :param percentile:
+        :param fc_thresh:
+        :return:
+        """
         self.filter_by_lookup()
         self.make_RNA_matrix()
         self.make_mean_matrix()
@@ -251,6 +316,11 @@ class Expression:
         self.mean_expr_mat["all"] = np.nanmean(self.expr_mat, axis=(2, 3))
 
     def filter_by_max_expression(self,percentile=25):
+        """
+
+        :param percentile:
+        :return:
+        """
         thresh = np.nanpercentile(self.mean_expr_mat["all"][~np.isnan(self.mean_expr_mat["all"])], percentile)
         print("Min expression threshold = ", thresh)
         expressed_mask = (self.mean_expr_mat["all"] > percentile).any(axis=(0, 1))
@@ -258,36 +328,65 @@ class Expression:
         self.TF_genes["expr_filtered"] = self.TF_genes["all"][expressed_mask]
 
     def filter_by_fold_change(self,fc_thresh=0.25):
+        """
+
+        :param fc_thresh:
+        :return:
+        """
         fold_change = np.nanmin(self.mean_expr_mat["expr_filtered"], axis=(0, 1)) / np.nanmax(self.mean_expr_mat["expr_filtered"], axis=(0, 1))
         changed_mask = fold_change < fc_thresh
         self.mean_expr_mat["expr+fc_filtered"] = self.mean_expr_mat["expr_filtered"][:, :, changed_mask]
         self.TF_genes["expr+fc_filtered"] = self.TF_genes["expr_filtered"][changed_mask]
 
     def calculate_z_score(self):
+        """
+
+        :return:
+        """
         self.mean_expr_z = {}
         self.mean_expr_z["expr+fc_filtered"] = np.dstack([self.z_score(self.mean_expr_mat["expr+fc_filtered"][:, :, i]) for i in range(self.mean_expr_mat["expr+fc_filtered"].shape[-1])])
 
     def calculate_k_means(self):
+        """
+
+        :return:
+        """
         empty_mask = ~np.isnan(self.mean_expr_z["expr+fc_filtered"].reshape(-1, self.mean_expr_z["expr+fc_filtered"].shape[-1])).all(axis=1)
         flat_expr_mat_z = self.mean_expr_z["expr+fc_filtered"].reshape(-1, self.mean_expr_z["expr+fc_filtered"].shape[-1])[empty_mask].T
         self.kmeans = KMeans(n_clusters=self.n_clusters, random_state=0).fit(flat_expr_mat_z)
         self.gene_states = self.kmeans.labels_
 
     def save_outputs(self):
+        """
+
+        :return:
+        """
         self.save_all_genes()
         self.save_genes_by_cluster()
         self.save_archetypes_by_cluster()
 
     def save_all_genes(self):
+        """
+
+        :return:
+        """
         save_csv(list(self.TF_genes["expr+fc_filtered"]),
                  "results/expression/all_genes/filtered_genes.txt", header=False, index=False)
 
     def save_genes_by_cluster(self):
+        """
+
+        :return:
+        """
         for i in np.unique(self.gene_states):
             save_csv(list(self.TF_genes["expr+fc_filtered"][self.gene_states == i]),
                      "results/expression/clusters/cluster %d.txt" % i, header=False, index=False)
 
     def save_archetypes_by_cluster(self):
+        """
+
+        :return:
+        """
         for i in np.unique(self.gene_states):
             gene_list = list(self.TF_genes["expr+fc_filtered"][self.gene_states == i])
             cid_list = []
@@ -300,6 +399,13 @@ class Expression:
                      header=False, index=False)
 
     def plot_candidate_genes(self,cmap=plt.cm.viridis, vmin=-2, vmax=2):
+        """
+
+        :param cmap:
+        :param vmin:
+        :param vmax:
+        :return:
+        """
         fig, ax = plt.subplots(4, 2, sharey=True, sharex=True)
         ax = ax.ravel()
         for i, gene in enumerate(self.candidate_genes):
@@ -309,6 +415,13 @@ class Expression:
         fig.savefig("results/expression/plots/candidate_genes.pdf")
 
     def plot_clusters(self,cmap=plt.cm.viridis, vmin=-2, vmax=2):
+        """
+
+        :param cmap:
+        :param vmin:
+        :param vmax:
+        :return:
+        """
         fig, ax = plt.subplots(4, 2, sharex=True, sharey=True)
         ax = ax.ravel()
         for j, i in enumerate(np.unique(self.gene_states)):
@@ -318,13 +431,33 @@ class Expression:
         fig.savefig("results/expression/plots/expression_clusters.pdf")
 
     def standardize_names(self,names):
+        """
+
+        :param names:
+        :return:
+        """
         names = standardize_names(names, self.aliases, self.true_names)
         return names
 
     def z_score(self,expr):
+        """
+
+        :param expr:
+        :return:
+        """
         return (expr - np.nanmean(expr)) / np.nanstd(expr)
 
     def plot_expression_profile(self,zmap, title, ax, cmap=plt.cm.viridis, vmin=-2, vmax=2):
+        """
+
+        :param zmap:
+        :param title:
+        :param ax:
+        :param cmap:
+        :param vmin:
+        :param vmax:
+        :return:
+        """
         ax.set_title(title)
         ax.imshow(np.flip(zmap, axis=0), vmin=vmin, vmax=vmax, cmap=cmap)
         ax.set_yticks(np.arange(5))
@@ -337,6 +470,11 @@ class Expression:
         cl.set_label("z-score")
 
     def kmeans(self,expr_mat_z):
+        """
+
+        :param expr_mat_z:
+        :return:
+        """
         empty_mask = ~np.isnan(expr_mat_z.reshape(-1, expr_mat_z.shape[-1])).all(axis=1)
         flat_expr_mat_z = expr_mat_z.reshape(-1, expr_mat_z.shape[-1])[empty_mask].T
         kmeans = KMeans(n_clusters=8, random_state=0).fit(flat_expr_mat_z)
@@ -344,6 +482,9 @@ class Expression:
         return kmeans, gene_states
 
 class Motif_Finder:
+    """
+
+    """
     def __init__(self,
                  genome_dir="reference/genome_dir.txt",
                  motif_annotations="reference/motif_annotations.xlsx"):
@@ -377,6 +518,10 @@ class Motif_Finder:
                     pmf_on = True
 
     def sample_eCRE_sequence(self):
+        """
+
+        :return:
+        """
         make_directory("results/fasta")
         make_directory("results/fasta/by_eCRE")
         bed_files = os.listdir("reference/eCRE_locs")
@@ -393,6 +538,11 @@ class Motif_Finder:
             print("fasta extraction for ",eCRE_name, " complete")
 
     def find_motifs(self,p_vals=[0.001, 0.0005, 0.0001, 0.00005]):
+        """
+
+        :param p_vals:
+        :return:
+        """
         make_directory("results/motifs")
         make_directory("results/motifs/raw")
 
@@ -431,6 +581,10 @@ python2 moods-dna.py  \
                 print("Motifs identified for the %s eCRE under P=%.6f" % (name, p_vals))
 
     def motif_to_bed(self):
+        """
+
+        :return:
+        """
         lookup_names = dict(zip(self.motif_table["Motif"], self.motif_table["Cluster_ID"]))
         motifcsvs = os.listdir("results/motifs/raw")
         make_directory("results/motifs/bed")
@@ -463,7 +617,16 @@ python2 moods-dna.py  \
                 bed_df.to_csv("results/motifs/bed/%s.bed" % (motifcsv.split(".csv")[0]), sep="\t", header=None,
                               index=None)
 
+                ##sort bedfile
+                bedfile = BedTool("results/motifs/bed/%s.bed" % (motifcsv.split(".csv")[0]))
+                bedfile.sort().saveas("results/motifs/bed/%s.bed" % (motifcsv.split(".csv")[0]))
+
+
     def motifs_by_archetype(self):
+        """
+
+        :return:
+        """
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/by_archetype")
         for bed in motif_beds:
@@ -474,6 +637,10 @@ python2 moods-dna.py  \
                 beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
 
     def motifs_by_cluster(self):
+        """
+
+        :return:
+        """
         archetypes_by_cluster_files = os.listdir("results/expression/archetypes")
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/by_cluster")
@@ -496,7 +663,10 @@ python2 moods-dna.py  \
                 adf.to_csv("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),sep="\t",header=None,index=None)
 
 class GenomePlot:
-    def __init__(self,eCRE,plot_constructs=True):
+    """
+
+    """
+    def __init__(self,eCRE,plot_constructs=True,clean_configs=True):
         self.eCRE = eCRE
         make_directory("results/genome_plots")
         make_directory("results/genome_plots/%s" % eCRE)
@@ -510,6 +680,9 @@ class GenomePlot:
         make_directory("results/genome_plots/%s/plots/by_cluster" % eCRE)
         make_directory("results/genome_plots/%s/plots/by_cluster_merge" % eCRE)
         make_directory("results/genome_plots/%s/plots/by_candidate" % eCRE)
+
+        if clean_configs is True:
+            self.clean_configs()
 
         if "_p" in self.eCRE:
             ##account for two potential eCRE inputs -- Gene_p=0.0xx and Gene
@@ -570,6 +743,92 @@ fontsize = 10
 style = UCSC
         """
 
+        self.genes = """
+        [genes]
+file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf
+
+# title of track (plotted on the right side)
+title = genes
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
+# For the 'share-y' option the y axis values is shared between this plot and the overlay plot.
+# Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+# By default the transcript_name is used.
+# If you want to use the gene_name:
+# prefered_name = gene_name
+# By default, the gtf is transformed to transcripts
+# If you want to use see only one structure per gene
+# merge_transcripts = true
+# You can change the color of coding sequences by:
+color = darkblue
+# height of track in cm
+height = 5
+# whether printing the labels
+labels = false
+# optional:
+# by default the labels are not printed if you have more than 60 features.
+# to change it, just increase the value:
+#max_labels = 60
+# optional: font size can be given to override the default size
+fontsize = 10
+# optional: line_width
+#line_width = 0.5
+# the display parameter defines how the gtf file is plotted.
+# Default is 'stacked' where regions are plotted on different lines so
+# we can see all regions and all labels.
+# The other options are ['collapsed', 'interleaved', 'triangles']
+# These options assume that the regions do not overlap.
+# `collapsed`: The gtf regions are plotted one after the other in one line.
+# `interleaved`: The gtf regions are plotted in two lines, first up, then down, then up etc.
+# optional, default is black. To remove the border, simply set 'border_color' to none
+# Not used in tssarrow style
+#border_color = black
+# style to plot the genes when the display is not triangles
+style = UCSC
+#style = flybase
+#style = tssarrow
+# maximum number of gene rows to be plotted. This
+# field is useful to limit large number of close genes
+# to be printed over many rows. When several images want
+# to be combined this must be set to get equal size
+# otherwise, on each image the height of each gene changes
+#gene_rows = 10
+# by default the ymax is the number of
+# rows occupied by the genes in the region plotted. However,
+# by setting this option, the global maximum is used instead.
+# This is useful to combine images that are all consistent and
+# have the same number of rows.
+#global_max_row = true
+# If you want to plot all labels inside the plotting region:
+#all_labels_inside = true
+# If you want to display the name of the gene which goes over the plotted
+# region in the right margin put:
+#labels_in_margin = true
+# if you use UCSC style, you can set the relative distance between 2 arrows on introns
+# default is 2
+#arrow_interval = 2
+# if you use tssarrow style, you can choose the length of the arrow in bp
+# (default is 4% of the plotted region)
+#arrow_length = 5000
+# if you use flybase or tssarrow style, you can choose the color of non-coding intervals:
+#color_utr = grey
+# as well as the proportion between their height and the one of coding
+# (by default they are the same height):
+#height_utr = 1
+# By default, for oriented intervals in flybase style,
+# or bed files with less than 12 columns, the arrowhead is added
+# outside of the interval.
+# If you want that the tip of the arrow correspond to
+# the extremity of the interval use:
+# arrowhead_included = true
+# optional. If not given is guessed from the file ending.
+file_type = gtf
+        """
 
         self.foot = """
 [x-axis]
@@ -585,9 +844,27 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         """
 
     def make_bigwig(self,name, dir, color="#666", height=1.5):
+        """
+
+        :param name:
+        :param dir:
+        :param color:
+        :param height:
+        :return:
+        """
         return self.bigwig_template % (name, dir, name, color, height)
 
     def make_bed(self,name, dir, color="darkblue", height=0.75, gene_rows=None, labels="off"):
+        """
+
+        :param name:
+        :param dir:
+        :param color:
+        :param height:
+        :param gene_rows:
+        :param labels:
+        :return:
+        """
         if gene_rows is None:
             out = self.archetype_template_height % (name, dir, name, color, height, labels)
         else:
@@ -595,11 +872,21 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         return out
 
     def write_bw(self,f):
+        """
+
+        :param f:
+        :return:
+        """
         for bwname, bwdir in self.bigwigs.values:
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir))
 
     def write_bd(self,f):
+        """
+
+        :param f:
+        :return:
+        """
         if self.plot_constructs is True:
             for bdname,bddir in self.bed_files.values:
                 if "#" not in bdname:
@@ -611,8 +898,13 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
 [spacer]
                     """)
     def ini_all_motifs(self):
+        """
+
+        :return:
+        """
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "all"), 'w')
         self.write_bw(f)
+        f.write(self.genes)
         self.write_bd(f)
         f.write(self.make_bed("All archetypes", "results/motifs/bed/%s.bed" % (self.eCRE),
                          height=3))
@@ -620,6 +912,10 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         f.close()  # you can omit in most cases as the destructor will call it
 
     def ini_by_cluster_merge(self):
+        """
+
+        :return:
+        """
         cat = "by_cluster_merge"
         archetype_files = os.listdir("results/motifs/by_cluster/%s" % self.eCRE)
         for archetype_file in archetype_files:
@@ -634,6 +930,10 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             f.close()
 
     def ini_by_cluster(self):
+        """
+
+        :return:
+        """
         cat = "by_cluster"
         archetype_files = os.listdir("results/motifs/by_cluster/%s" % self.eCRE)
         for archetype_file in archetype_files:
@@ -648,8 +948,6 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
                 f.write(self.make_bed(name="A%d" % aid,
                                  dir="results/motifs/by_archetype/%s/archetype_%d.bed" % (self.eCRE, aid),
                                  gene_rows=2))
-
-            #####^^ list the archetypes for each cluster. Retrieve list from text file. Run the bed formatting for each, setting row_no, export
             f.write(self.foot)
             f.close()
 
@@ -657,7 +955,11 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
 
     def ini_by_candidate(self,
                          candidate_genes=["Nkx2-2","Nkx6-1","Irx3","Pax6","Olig2","Sox2"]):
+        """
 
+        :param candidate_genes:
+        :return:
+        """
         cat = "by_candidate"
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cat), 'w')
         self.write_bw(f)
@@ -671,10 +973,24 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         f.close()
 
     def make_runline(self,config_path,plot_path,suppress=True):
+        """
+
+        :param config_path:
+        :param plot_path:
+        :param suppress:
+        :return:
+        """
         if suppress is True:
             return self.runline_template_suppress%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
         else:
             return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
+
+    def clean_configs(self):
+        for path, subdirs, files in os.walk("results/genome_plots"):
+            for name in files:
+                config_path = os.path.join(path, name)
+                if ".ini" in config_path:
+                    os.remove(config_path)
 
     def make_plots(self,parallel = False,suppress = True):
         """
@@ -707,30 +1023,70 @@ source activate pygenometracks \n
             Parallel(n_jobs=num_cores)(delayed(os.system)(scriptt) for scriptt in scripts)
 
 def make_directory(dir):
+    """
+
+    :param dir:
+    :return:
+    """
     if not os.path.exists(dir):
         os.mkdir(dir)
 
 def delete_directory(dir):
+    """
+
+    :param dir:
+    :return:
+    """
     if os.path.exists(dir):
         shutil.rmtree(dir)
 
 def save_csv(data,filename,**kwargs):
+    """
+
+    :param data:
+    :param filename:
+    :param kwargs:
+    :return:
+    """
     gene_df = pd.DataFrame(data)
     gene_df.to_csv(filename,**kwargs)
 
 def capitalize_list(list):
+    """
+
+    :param list:
+    :return:
+    """
     return [val.capitalize() for val in list]
 
 def save_dict(dictionary,filename):
+    """
+
+    :param dictionary:
+    :param filename:
+    :return:
+    """
     with open('%s.json'%filename, 'w') as fp:
         json.dump(dictionary, fp)
 
 def open_dict(filename):
+    """
+
+    :param filename:
+    :return:
+    """
     with open('%s.json'%filename, 'r') as fp:
         dictionary = json.load(fp)
     return dictionary
 
 def standardize_name(name,aliases,true_names=None):
+    """
+
+    :param name:
+    :param aliases:
+    :param true_names:
+    :return:
+    """
     if true_names is None:
         true_names = aliases.values()
     if name not in true_names:
@@ -742,9 +1098,22 @@ def standardize_name(name,aliases,true_names=None):
         return name
 
 def standardize_names(names,aliases,true_names=None):
+    """
+
+    :param names:
+    :param aliases:
+    :param true_names:
+    :return:
+    """
     return [standardize_name(name, aliases,true_names) for name in names]
 
 
 def unzip(file,outfile):
+    """
+
+    :param file:
+    :param outfile:
+    :return:
+    """
     with gzip.open(file, 'r') as f_in, open(outfile, 'wb') as f_out:
       shutil.copyfileobj(f_in, f_out)
