@@ -974,7 +974,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,kwargs = None):
+    def write_bw(self,f,source_file=None,**kwargs):
         """
 
         :param f:
