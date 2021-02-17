@@ -746,6 +746,7 @@ style = UCSC
         """
 
         self.genes = """
+[spacer]
 [genes]
 file = /camp/lab/luscomben/reference/Genomics/iGenomes/Mus_musculus/NCBI/GRCm38/Annotation/Genes/genes.gtf
 # title of track (plotted on the right side)
