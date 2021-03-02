@@ -762,8 +762,8 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
     def collapse_bed_relevant_clusters(self,clusters=[1,3,5,6]):
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/relevant_clusters")
-        cols = plt.cm.Set1(np.arange(len(clusters))/len(clusters))[:,:3]
-        cols = [str(tuple(col*255)) for col in cols]
+        cols = (plt.cm.Set1(np.arange(len(clusters))/len(clusters))[:,:3]*255).astype(np.int64)
+        cols = [str(tuple(col)).split("(")[1].split(")")[0] for col in cols]
         for bed in motif_beds:
             if ".bed" in bed:
                 bedname = bed.split(".bed")[0]
