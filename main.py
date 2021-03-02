@@ -13,7 +13,7 @@ from synCRE import *
 # ##############################
 # # Find motifs within each eCRE
 # ##############################
-# mtf = Motif_Finder()
+mtf = Motif_Finder()
 # # mtf.make_pmf()
 # # mtf.sample_eCRE_sequence()
 # # mtf.find_motifs(0.001)
@@ -28,7 +28,7 @@ from synCRE import *
 # mtf.motifs_by_archetype(collapse=True)
 # mtf.motifs_by_cluster(make_bedgraph=False)
 # mtf.collapse_all_bed()
-# mtf.collapse_bed_relevant_clusters(clusters=[0,3,4,5])
+mtf.collapse_bed_relevant_clusters(clusters=[0,3,4,5])
 # print("motifs found")
 #
 ##############################

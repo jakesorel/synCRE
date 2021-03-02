@@ -775,25 +775,25 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
                             if first is True:
                                 adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
                                                   sep="\t", header=None)
-                                adf[3] = "A%d"%archetype
-                                score = 1
-                                adf[4] = score
-                                adf[5] = "."
-                                adf[6] = adf[1]
-                                adf[7] = adf[2]
-                                adf[8] = cols[i]
+                                # adf[3] = "A%d"%archetype
+                                # score = 1
+                                # adf[4] = score
+                                # adf[5] = "."
+                                # adf[6] = adf[1]
+                                # adf[7] = adf[2]
+                                # adf[8] = cols[i]
                                 first = False
                             else:
                                 new_df = pd.read_csv(
                                     "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
                                     header=None)
-                                new_df[3] = "A%d"%archetype
-                                score = 1
-                                new_df[4] = score
-                                new_df[5] = "."
-                                new_df[6] = new_df[1]
-                                new_df[7] = new_df[2]
-                                new_df[8] = cols[i]
+                                # new_df[3] = "A%d"%archetype
+                                # score = 1
+                                # new_df[4] = score
+                                # new_df[5] = "."
+                                # new_df[6] = new_df[1]
+                                # new_df[7] = new_df[2]
+                                # new_df[8] = cols[i]
                                 adf = pd.concat([adf, new_df])
 
                         except:
