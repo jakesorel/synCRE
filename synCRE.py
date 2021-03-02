@@ -489,7 +489,7 @@ class Motif_Finder:
     def __init__(self,
                  genome_dir="reference/genome_dir.txt",
                  motif_annotations="reference/motif_annotations.xlsx"):
-        self.genome_dir = open(genome_dir)
+        self.genome_dir = open(genome_dir).read()
         self.motif_table = pd.read_excel(motif_annotations, 1, engine='openpyxl')
 
 
@@ -631,7 +631,7 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
             bedgraph_name = eCRE_name + ".bedgraph"
             bed_to_bedgraph("results/motifs/bed/%s"%bedfile,"results/motifs/bedgraph/%s"%bedgraph_name)
 
-    def motifs_by_archetype(self):
+    def motifs_by_archetype(self,collapse=True):
         """
 
         :return:
@@ -644,6 +644,72 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
             beddf = pd.read_csv("results/motifs/bed/%s"%bed,sep="\t",header=None)
             for archetype in range(1,287):
                 beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
+                if collapse is True:
+                    bed_file_name = "results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype)
+                    BedTool(bed_file_name).merge().saveas(bed_file_name)
+
+    def collapse_all_bed(self):
+        motif_beds = os.listdir("results/motifs/bed")
+        for bed in motif_beds:
+            bedname = bed.split(".bed")[0]
+            first = True
+            for archetype in range(1,287):
+                try:
+                    if first is True:
+                        adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
+                                          sep="\t", header=None)
+                        first = False
+                    else:
+                        adf = pd.concat([adf, pd.read_csv(
+                            "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
+                            header=None)])
+                except:
+                    a = 1
+            adf.to_csv("results/motifs/bed/%s" % (bed), sep="\t", header=None,
+                       index=None)
+
+
+    def collapse_bed_relevant_clusters(self,clusters=[1,3,5,6]):
+        motif_beds = os.listdir("results/motifs/bed")
+        make_directory("results/motifs/relevant_clusters")
+        cols = plt.cm.Set1(np.arange(len(clusters))/len(clusters))[:,:3]
+        cols = [str(tuple(col*255)) for col in cols]
+        for bed in motif_beds:
+            bedname = bed.split(".bed")[0]
+            first = True
+            for i, cluster in enumerate(clusters):
+                archetypes = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster, dtype=np.int64)
+                for archetype in archetypes:
+                    try:
+                        if first is True:
+                            adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
+                                              sep="\t", header=None)
+                            adf[3] = "A%d"%archetype
+                            score = 1
+                            adf[4] = score
+                            adf[5] = "."
+                            adf[6] = adf[1]
+                            adf[7] = adf[2]
+                            adf[8] = cols[i]
+                            first = False
+                        else:
+                            new_df = pd.read_csv(
+                                "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
+                                header=None)
+                            new_df[3] = "A%d"%archetype
+                            score = 1
+                            new_df[4] = score
+                            new_df[5] = "."
+                            new_df[6] = new_df[1]
+                            new_df[7] = new_df[2]
+                            new_df[8] = cols[i]
+                            adf = pd.concat([adf, new_df])
+
+                    except:
+                        a = 1
+            adf.to_csv("results/motifs/relevant_clusters/%s" % (bed), sep="\t", header=None,
+                       index=None)
+
 
     def motifs_by_cluster(self,make_bedgraph=True):
         """
@@ -727,7 +793,7 @@ file=%s
 title=%s
 color = %s
 negative_color=%s
-min_value = %.3f
+min_value = %s
 #max_value = auto
 height = %.3f
 number of bins = 500
@@ -1035,6 +1101,30 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
+    def ini_relevant_clusters(self):
+        """
+
+        :return:
+        """
+        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "relevant_clusters"), 'w')
+        if self.plot_bw:
+            self.write_bw(f)
+        if self.plot_genes:
+            f.write(self.genes)
+        if self.plot_constructs:
+            self.write_bd(f)
+        if self.plot_phylo:
+            self.write_bw(f,self.phylo_files,color="green",min_value="auto")
+            # self.write_bedgraph(f)
+        # if os.path.exists("results/motifs/bedgraph/%s.bedgraph"%(self.eCRE)):
+        #     f.write(self.bedgraph_template%("Archetypes for relevant clusters","results/motifs/bedgraph/%s.bedgraph"%(self.eCRE),"All archetypes"))
+        else:
+            f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s.bed" % (self.eCRE),
+                             height=3))
+        f.write(self.foot)
+        f.close()  # you can omit in most cases as the destructor will call it
+
+
     def ini_by_cluster_merge(self):
         """
 
@@ -1054,7 +1144,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
                 self.write_bd(f)
             if self.plot_phylo:
                 self.write_bw(f, self.phylo_files, color="green", min_value="auto")
-            bedgraph_name = "results/motifs/by_cluster/%s/%s"%(self.eCRE,archetype_file).split(".bed")[0] + ".bedfile"
+            bedgraph_name = ("results/motifs/by_cluster/%s/%s"%(self.eCRE,archetype_file)).split(".bed")[0] + ".bedfile"
             if os.path.exists("results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name)):
                 f.write(self.bedgraph_template % (
                 cluster_name, "results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name), cluster_name))
