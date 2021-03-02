@@ -1219,7 +1219,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             self.write_bw(f,self.phylo_files,color="green",min_value="auto")
             # self.write_bedgraph(f)
         f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s.bed" % (self.eCRE),
-                         height=3))
+                         height=3,color=None))
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
