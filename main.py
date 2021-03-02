@@ -40,7 +40,7 @@ eCREs = os.listdir("results/motifs/bed")
 for eCRE in eCREs:
     if ".bed" in eCRE:
         eCRE = eCRE.split(".bed")[0]
-        plot = GenomePlot(eCRE,plot_constructs=False,plot_bw=False,plot_genes=False,plot_phylo=False)
+        plot = GenomePlot(eCRE,plot_constructs=True,plot_bw=True,plot_genes=True,plot_phylo=True)
         plot.ini_all_motifs()
         plot.ini_by_cluster()
         plot.ini_relevant_clusters()
