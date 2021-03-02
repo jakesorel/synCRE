@@ -9,7 +9,7 @@ from io import StringIO
 from pybedtools import BedTool
 import multiprocessing
 from joblib import Parallel, delayed
-
+import seaborn as sb
 
 class Lookup:
     """
@@ -491,7 +491,8 @@ class Motif_Finder:
                  motif_annotations="reference/motif_annotations.xlsx"):
         self.genome_dir = open(genome_dir).read()
         self.motif_table = pd.read_excel(motif_annotations, 1, engine='openpyxl')
-
+        self.lookup = open_dict("reference/lookup_table/lookup_table")
+        self.hit_thresh = []
 
     def make_pmf(self):
         """
@@ -581,17 +582,104 @@ python2 moods-dna.py  \
                 os.system(runline % (name, p_vals, name))
                 print("Motifs identified for the %s eCRE under P=%.6f" % (name, p_vals))
 
+    def plot_motif_distributions(self):
+
+        fig2, ax2 = plt.subplots(figsize=(4, 3))
+        raw_files = os.listdir("results/motifs/raw")
+        for file in raw_files:
+            if ".csv" in file:
+                df = pd.read_csv("results/motifs/raw/%s" % file, sep=";", header=None)
+                make_directory("results/motifs/hit_score")
+                fig, ax = plt.subplots(figsize=(4, 3))
+                sb.distplot(df[4], bins=200, ax=ax)
+                sb.distplot(df[4], bins=200, ax=ax2, label=file.split(".csv")[0])
+                ylim = ax.get_ylim()
+                if type(self.hit_thresh) is not list:
+                    ax.plot((self.hit_thresh,self.hit_thresh),(0,ylim[1]*2),linestyle=":",color="grey",zorder=10)
+                ax.set(xlabel="Hit Score", ylabel="Density",ylim=ylim)
+
+                fig.tight_layout()
+                fig.savefig("results/motifs/hit_score/%s.pdf" % file.split(".csv")[0])
+        ylim2 = ax2.get_ylim()
+        if type(self.hit_thresh) is not list:
+            ax2.plot((self.hit_thresh, self.hit_thresh), (0, ylim2[1] * 2), linestyle=":", color="grey", zorder=10)
+        ax2.set(xlabel="Hit Score", ylabel="Density", ylim=ylim2)
+        ax2.legend()
+        fig2.tight_layout()
+        fig2.savefig("results/motifs/hit_score/merge.pdf")
+
+    def get_threshold(self,required_dicts=False,percentile=80):
+        if required_dicts is not False:
+            lookup_names = dict(zip(self.motif_table["Motif"], self.motif_table["Cluster_ID"]))
+            motifcsvs = os.listdir("results/motifs/raw")
+            make_directory("results/motifs/bed")
+            bed_dfs = {}
+            for motifcsv in motifcsvs:
+                if ".csv" in motifcsv:
+                    df = pd.read_csv("results/motifs/raw/%s" % motifcsv, sep=";", header=None)
+                    seq_len = [len(string) for string in df[5]]
+                    locs = df[0]
+                    names = df[1].values
+                    names = [name.split(".pmf")[0].split(" ")[0] for name in names]
+                    motif_ids = []
+                    for name in names:
+                        try:
+                            motif_ids.append(lookup_names[name])
+                        except KeyError:
+                            motif_ids.append(-1)
+                    chrom, start, end = [], [], []
+                    for loc in locs:
+                        chrm, pos = loc.split(":")
+                        st, en = pos.split("-")
+                        st, en = int(st), int(en)
+                        chrom.append(chrm)
+                        start.append(st)
+                        end.append(en)
+                    start, end = np.array(start), np.array(end)
+                    start += df[2].values
+                    end = start + seq_len
+                    bed_df = pd.DataFrame([chrom, start, end, motif_ids, df[4]]).transpose()
+                    bed_dfs[motifcsv.split(".csv")[0]] = bed_df
+
+            thresh_dicts = []
+            for i, (eCRE, bed_df) in enumerate(bed_dfs.items()):
+                for j, (TF, num) in enumerate(required_dicts[eCRE].items()):
+                    a = 1
+                    cid = self.lookup[TF]
+                    cid_df = bed_df.loc[bed_df[3] == cid]
+                    thresh_dicts.append(
+                        {"eCRE": eCRE, "TF": TF, "thresh": cid_df[4].values[(-1 * cid_df[4]).argsort()][num - 1]})
+            self.hit_thresh = pd.DataFrame(thresh_dicts)["thresh"].min()
+        else:
+            raw_files = os.listdir("results/motifs/raw")
+            hscores = np.array(())
+            for file in raw_files:
+                if ".csv" in file:
+                    df = pd.read_csv("results/motifs/raw/%s" % file, sep=";", header=None)
+                    hscores = np.concatenate((hscores, df[4]))
+            self.hit_thresh = np.percentile(hscores, percentile)
+        print("thresh = ",self.hit_thresh)
+
+    def filter_motifs_by_hit(self,required_dicts=False,percentile=80):
+        self.get_threshold(required_dicts=required_dicts, percentile=percentile)
+        make_directory("results/motifs/filtered")
+        raw_files = os.listdir("results/motifs/raw")
+        for file in raw_files:
+            if ".csv" in file:
+                df = pd.read_csv("results/motifs/raw/%s" % file, sep=";", header=None)
+                df.loc[df[4]>=self.hit_thresh].to_csv("results/motifs/filtered/%s"%file,sep=";",header=None,index=None)
+
     def motif_to_bed(self):
         """
 
         :return:
         """
         lookup_names = dict(zip(self.motif_table["Motif"], self.motif_table["Cluster_ID"]))
-        motifcsvs = os.listdir("results/motifs/raw")
+        motifcsvs = os.listdir("results/motifs/filtered")
         make_directory("results/motifs/bed")
         for motifcsv in motifcsvs:
             if ".csv" in motifcsv:
-                df = pd.read_csv("results/motifs/raw/%s" % motifcsv, sep=";", header=None)
+                df = pd.read_csv("results/motifs/filtered/%s" % motifcsv, sep=";", header=None)
                 seq_len = [len(string) for string in df[5]]
                 locs = df[0]
                 names = df[1].values
@@ -639,34 +727,36 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/by_archetype")
         for bed in motif_beds:
-            bedname = bed.split(".bed")[0]
-            make_directory("results/motifs/by_archetype/%s"%bedname)
-            beddf = pd.read_csv("results/motifs/bed/%s"%bed,sep="\t",header=None)
-            for archetype in range(1,287):
-                beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
-                if collapse is True:
-                    bed_file_name = "results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype)
-                    BedTool(bed_file_name).merge().saveas(bed_file_name)
+            if ".bed" in bed:
+                bedname = bed.split(".bed")[0]
+                make_directory("results/motifs/by_archetype/%s"%bedname)
+                beddf = pd.read_csv("results/motifs/bed/%s"%bed,sep="\t",header=None)
+                for archetype in range(1,287):
+                    beddf.loc[beddf[3] == archetype][beddf.columns[:3]].to_csv("results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype),sep="\t",header=None,index=None)
+                    if collapse is True:
+                        bed_file_name = "results/motifs/by_archetype/%s/archetype_%d.bed"%(bedname,archetype)
+                        BedTool(bed_file_name).merge().saveas(bed_file_name)
 
     def collapse_all_bed(self):
         motif_beds = os.listdir("results/motifs/bed")
         for bed in motif_beds:
-            bedname = bed.split(".bed")[0]
-            first = True
-            for archetype in range(1,287):
-                try:
-                    if first is True:
-                        adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
-                                          sep="\t", header=None)
-                        first = False
-                    else:
-                        adf = pd.concat([adf, pd.read_csv(
-                            "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
-                            header=None)])
-                except:
-                    a = 1
-            adf.to_csv("results/motifs/bed/%s" % (bed), sep="\t", header=None,
-                       index=None)
+            if ".bed" in bed:
+                bedname = bed.split(".bed")[0]
+                first = True
+                for archetype in range(1,287):
+                    try:
+                        if first is True:
+                            adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
+                                              sep="\t", header=None)
+                            first = False
+                        else:
+                            adf = pd.concat([adf, pd.read_csv(
+                                "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
+                                header=None)])
+                    except:
+                        a = 1
+                adf.to_csv("results/motifs/bed/%s" % (bed), sep="\t", header=None,
+                           index=None)
 
 
     def collapse_bed_relevant_clusters(self,clusters=[1,3,5,6]):
@@ -675,40 +765,41 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
         cols = plt.cm.Set1(np.arange(len(clusters))/len(clusters))[:,:3]
         cols = [str(tuple(col*255)) for col in cols]
         for bed in motif_beds:
-            bedname = bed.split(".bed")[0]
-            first = True
-            for i, cluster in enumerate(clusters):
-                archetypes = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster, dtype=np.int64)
-                for archetype in archetypes:
-                    try:
-                        if first is True:
-                            adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
-                                              sep="\t", header=None)
-                            adf[3] = "A%d"%archetype
-                            score = 1
-                            adf[4] = score
-                            adf[5] = "."
-                            adf[6] = adf[1]
-                            adf[7] = adf[2]
-                            adf[8] = cols[i]
-                            first = False
-                        else:
-                            new_df = pd.read_csv(
-                                "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
-                                header=None)
-                            new_df[3] = "A%d"%archetype
-                            score = 1
-                            new_df[4] = score
-                            new_df[5] = "."
-                            new_df[6] = new_df[1]
-                            new_df[7] = new_df[2]
-                            new_df[8] = cols[i]
-                            adf = pd.concat([adf, new_df])
+            if ".bed" in bed:
+                bedname = bed.split(".bed")[0]
+                first = True
+                for i, cluster in enumerate(clusters):
+                    archetypes = np.loadtxt("results/expression/archetypes/archetypes_for_cluster_%d.txt" % cluster, dtype=np.int64)
+                    for archetype in archetypes:
+                        try:
+                            if first is True:
+                                adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
+                                                  sep="\t", header=None)
+                                adf[3] = "A%d"%archetype
+                                score = 1
+                                adf[4] = score
+                                adf[5] = "."
+                                adf[6] = adf[1]
+                                adf[7] = adf[2]
+                                adf[8] = cols[i]
+                                first = False
+                            else:
+                                new_df = pd.read_csv(
+                                    "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
+                                    header=None)
+                                new_df[3] = "A%d"%archetype
+                                score = 1
+                                new_df[4] = score
+                                new_df[5] = "."
+                                new_df[6] = new_df[1]
+                                new_df[7] = new_df[2]
+                                new_df[8] = cols[i]
+                                adf = pd.concat([adf, new_df])
 
-                    except:
-                        a = 1
-            adf.to_csv("results/motifs/relevant_clusters/%s" % (bed), sep="\t", header=None,
-                       index=None)
+                        except:
+                            a = 1
+                adf.to_csv("results/motifs/relevant_clusters/%s" % (bed), sep="\t", header=None,
+                           index=None)
 
 
     def motifs_by_cluster(self,make_bedgraph=True):
@@ -720,27 +811,28 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/by_cluster")
         for bed in motif_beds:
-            bedname = bed.split(".bed")[0]
-            make_directory("results/motifs/by_cluster/%s"%bedname)
-            for file in archetypes_by_cluster_files:
-                cluster_id = int(file.split(".txt")[0].split("_")[-1])
-                archetypes = np.loadtxt("results/expression/archetypes/%s"%file,dtype=np.int64)
-                first = True
-                for archetype in archetypes:
-                    try:
-                        if first is True:
-                            adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),sep="\t",header=None)
-                            first = False
-                        else:
-                            adf = pd.concat([adf,pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),sep="\t",header=None)])
-                    except:
-                        a = 1
-                adf.to_csv("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),sep="\t",header=None,index=None)
-                os.system("""
-sort -k2,2n -k3,3n results/motifs/by_cluster/%s/cluster_%d.bed -o results/motifs/by_cluster/%s/cluster_%d.bed
-                """%(bedname,cluster_id,bedname,cluster_id))
-                if make_bedgraph:
-                    bed_to_bedgraph("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),"results/motifs/by_cluster/%s/cluster_%d.bedgraph"%(bedname,cluster_id))
+            if ".bed" in bed:
+                bedname = bed.split(".bed")[0]
+                make_directory("results/motifs/by_cluster/%s"%bedname)
+                for file in archetypes_by_cluster_files:
+                    cluster_id = int(file.split(".txt")[0].split("_")[-1])
+                    archetypes = np.loadtxt("results/expression/archetypes/%s"%file,dtype=np.int64)
+                    first = True
+                    for archetype in archetypes:
+                        try:
+                            if first is True:
+                                adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),sep="\t",header=None)
+                                first = False
+                            else:
+                                adf = pd.concat([adf,pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),sep="\t",header=None)])
+                        except:
+                            a = 1
+                    adf.to_csv("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),sep="\t",header=None,index=None)
+                    os.system("""
+    sort -k2,2n -k3,3n results/motifs/by_cluster/%s/cluster_%d.bed -o results/motifs/by_cluster/%s/cluster_%d.bed
+                    """%(bedname,cluster_id,bedname,cluster_id))
+                    if make_bedgraph:
+                        bed_to_bedgraph("results/motifs/by_cluster/%s/cluster_%d.bed"%(bedname,cluster_id),"results/motifs/by_cluster/%s/cluster_%d.bedgraph"%(bedname,cluster_id))
 
 
 class GenomePlot:
