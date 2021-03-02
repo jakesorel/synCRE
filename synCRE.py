@@ -1134,7 +1134,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :return:
         """
         if color is None:
-            col = "#"
+            col = "color = bed_rgb"
         else:
             col = "color = %s"%color
         if gene_rows is None:
