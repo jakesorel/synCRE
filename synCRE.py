@@ -760,6 +760,12 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
 
 
     def collapse_bed_relevant_clusters(self,clusters=[1,3,5,6]):
+        """
+        NB: this will duplicate archetypes found in multiple clusters
+
+        :param clusters:
+        :return:
+        """
         motif_beds = os.listdir("results/motifs/bed")
         make_directory("results/motifs/relevant_clusters")
         cols = (plt.cm.Set1(np.arange(len(clusters))/len(clusters))[:,:3]*255).astype(np.int64)
@@ -776,7 +782,7 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
                                 adf = pd.read_csv("results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype),
                                                   sep="\t", header=None)
                                 adf[3] = "A%d"%archetype
-                                score = 1
+                                score = 1000
                                 adf[4] = score
                                 adf[5] = "."
                                 adf[6] = adf[1]
@@ -788,7 +794,7 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
                                     "results/motifs/by_archetype/%s/archetype_%d.bed" % (bedname, archetype), sep="\t",
                                     header=None)
                                 new_df[3] = "A%d"%archetype
-                                score = 1
+                                score = 1000
                                 new_df[4] = score
                                 new_df[5] = "."
                                 new_df[6] = new_df[1]
@@ -898,7 +904,7 @@ file_type = bigwig
 [%s]
 file=%s
 title=%s
-color = %s
+%s
 height = %.3f
 # line_width = 0.5
 gene_rows = %d
@@ -912,7 +918,7 @@ style = UCSC
 [%s]
 file=%s
 title=%s
-color = %s
+%s
 height = %.3f
 # line_width = 0.5
 # gene_rows = 2
@@ -1127,10 +1133,14 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param labels:
         :return:
         """
-        if gene_rows is None:
-            out = self.archetype_template_height % (name, dir, name, color, height, labels)
+        if color is None:
+            col = "#"
         else:
-            out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
+            col = "color = %s"%color
+        if gene_rows is None:
+            out = self.archetype_template_height % (name, dir, name, col, height, labels)
+        else:
+            out = self.archetype_template_rows % (name, dir, name, col, height, gene_rows, labels)
         return out
 
     def write_bw(self,f,source_file=None,color="#666",min_value = 0):
