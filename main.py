@@ -43,9 +43,9 @@ for eCRE in eCREs:
         plot = GenomePlot(eCRE,plot_constructs=True,plot_bw=True,plot_genes=True,plot_phylo=True)
         # plot.ini_all_motifs()
         # plot.ini_by_cluster()
-        # plot.ini_relevant_clusters()
+        plot.ini_relevant_clusters()
         # plot.ini_by_cluster_merge()
-        plot.ini_by_candidate()
+        # plot.ini_by_candidate()
         plot.make_plots(parallel=True,suppress=True)
         print("""
         ################################################
