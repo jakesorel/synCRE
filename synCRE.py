@@ -605,7 +605,7 @@ python2 moods-dna.py  \
             names, hits = [],[]
             for i in range(self.chip_truth.shape[0]):
                 chip_name, publication, file = self.chip_truth.iloc[i]
-                hit = BedTool("reference/eCRE_locs/%s"%bed).intersect(file).to_dataframe().shape[0]
+                hit = BedTool("reference/eCRE_locs/%s"%bed).intersect(file).to_dataframe()
                 names.append(chip_name)
                 hits.append(hit)
             dicts.append(dict(zip(names,hits)))
