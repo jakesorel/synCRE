@@ -606,11 +606,12 @@ python2 moods-dna.py  \
             for i in range(self.chip_truth.shape[0]):
                 chip_name, publication, file = self.chip_truth.iloc[i]
                 hit = BedTool("reference/eCRE_locs/%s"%bed).intersect(file).to_dataframe()
+                print(hit)
                 names.append(chip_name)
                 hits.append(hit)
             dicts.append(dict(zip(names,hits)))
         truth_mat = dict(zip(eCRE_names,dicts))
-        print(truth_mat)
+        # print(truth_mat)
 
     def get_threshold(self,required_dicts=False,percentile=80):
         if required_dicts is not False:
