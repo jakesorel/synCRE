@@ -14,10 +14,11 @@ from synCRE import *
 # # Find motifs within each eCRE
 # ##############################
 mtf = Motif_Finder()
-# # mtf.make_pmf()
-# # mtf.sample_eCRE_sequence()
-# # mtf.find_motifs(0.001)
-#
+# mtf.make_pmf()
+# mtf.sample_eCRE_sequence()
+# mtf.find_motifs(4)
+mtf.make_truth_matrix()
+
 # required_dicts = {"Olig2": {"Olig2": 1, "Nkx2-2": 1, "Gli3": 1},
 #                   "Nkx2-2": {"Olig2": 1, "Nkx2-2": 1, "Gli3": 1},
 #                   "Pax6": {"Olig2": 1, "Nkx2-2": 1}}
@@ -34,24 +35,24 @@ mtf = Motif_Finder()
 ##############################
 # Plot data
 ##############################
-eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
-eCREs = os.listdir("results/motifs/bed")
-
-for eCRE in eCREs:
-    if ".bed" in eCRE:
-        eCRE = eCRE.split(".bed")[0]
-        plot = GenomePlot(eCRE,plot_constructs=True,plot_bw=True,plot_genes=True,plot_phylo=True)
-        # plot.ini_all_motifs()
-        # plot.ini_by_cluster()
-        plot.ini_relevant_clusters()
-        # plot.ini_by_cluster_merge()
-        # plot.ini_by_candidate()
-        plot.make_plots(parallel=True,suppress=True)
-        print("""
-        ################################################
-        Plots for %s complete
-        ################################################
-        """%eCRE)
+# eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
+# eCREs = os.listdir("results/motifs/bed")
+#
+# for eCRE in eCREs:
+#     if ".bed" in eCRE:
+#         eCRE = eCRE.split(".bed")[0]
+#         plot = GenomePlot(eCRE,plot_constructs=True,plot_bw=True,plot_genes=True,plot_phylo=True)
+#         # plot.ini_all_motifs()
+#         # plot.ini_by_cluster()
+#         plot.ini_relevant_clusters()
+#         # plot.ini_by_cluster_merge()
+#         # plot.ini_by_candidate()
+#         plot.make_plots(parallel=True,suppress=True)
+#         print("""
+#         ################################################
+#         Plots for %s complete
+#         ################################################
+#         """%eCRE)
 #
 #
 # """

@@ -1,0 +1,4 @@
+Nkx2-2	Nishi2015	/camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/macs/broadPeak/consensus/Nkx22/Nkx22.consensus_peaks.bed
+Nkx6-1	Nishi2015	/camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/macs/broadPeak/consensus/Nkx61/Nkx61.consensus_peaks.bed
+Olig2	Nishi2015	/camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/macs/broadPeak/consensus/Olig2/Olig2.consensus_peaks.bed
+Gli3	Nishi2015	/camp/lab/briscoej/working/Joaquina/hpc_camp/public_data/Nishi2015_PMID26293298/results/bwa/mergedLibrary/macs/broadPeak/Gli3FLAG_IP_R1_peaks.broadPeak

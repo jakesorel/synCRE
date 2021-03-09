@@ -488,10 +488,12 @@ class Motif_Finder:
     """
     def __init__(self,
                  genome_dir="reference/genome_dir.txt",
-                 motif_annotations="reference/motif_annotations.xlsx"):
+                 motif_annotations="reference/motif_annotations.xlsx",
+                 chip_truth="reference/chip_truth.txt"):
         self.genome_dir = open(genome_dir).read()
         self.motif_table = pd.read_excel(motif_annotations, 1, engine='openpyxl')
         self.lookup = open_dict("reference/lookup_table/lookup_table")
+        self.chip_truth = pd.read_csv(chip_truth,sep="\t",header=None)
         self.hit_thresh = []
 
     def make_pmf(self):
@@ -539,8 +541,10 @@ class Motif_Finder:
             delete_directory("results/fasta/scrap")
             print("fasta extraction for ",eCRE_name, " complete")
 
-    def find_motifs(self,p_vals=[0.001, 0.0005, 0.0001, 0.00005]):
+    def find_motifs(self,minthresh=4):
         """
+
+        Uses MOODS to find all motif matches above a threshold log-odds score (against pre-defined background rates)
 
         :param p_vals:
         :return:
@@ -548,39 +552,21 @@ class Motif_Finder:
         make_directory("results/motifs")
         make_directory("results/motifs/raw")
 
-        runline_p = """
-eval "$(conda shell.bash hook)" \n
-source activate moods \n
-cd pkgs/moods/scripts \n
-pwd \n
-python2 moods-dna.py  \
---sep ";" -s ../../../results/fasta/by_eCRE/%s.fa --p-value %.6f \
---lo-bg 2.977e-01 2.023e-01 2.023e-01 2.977e-01 \
--m ../../../reference/motifs/pmf/* -o ../../../results/motifs/raw/%s_p=%.6f.csv
-        """
-
         runline = """
 eval "$(conda shell.bash hook)" \n
 source activate moods \n
 cd pkgs/moods/scripts \n
 pwd \n
 python2 moods-dna.py  \
---sep ";" -s ../../../results/fasta/by_eCRE/%s.fa --p-value %.6f \
+--sep ";" -s ../../../results/fasta/by_eCRE/%s.fa --threshold %.6f \
 --lo-bg 2.977e-01 2.023e-01 2.023e-01 2.977e-01 \
 -m ../../../reference/motifs/pmf/* -o ../../../results/motifs/raw/%s.csv
         """
 
         eCRE_names = [name.split(".bed")[0] for name in os.listdir("reference/eCRE_locs")]
-        # eCRE_names = ["Olig2", "Pax6", "Nkx2-2"]
-        if type(p_vals) is list:
-            for p_val in p_vals:
-                for name in eCRE_names:
-                    os.system(runline_p % (name, p_val, name, p_val))
-                    print("Motifs identified for the %s eCRE under P=%.6f"%(name,p_val))
-        elif type(p_vals) is float:
-            for name in eCRE_names:
-                os.system(runline % (name, p_vals, name))
-                print("Motifs identified for the %s eCRE under P=%.6f" % (name, p_vals))
+        for name in eCRE_names:
+            os.system(runline % (name, minthresh, name))
+            print("Motifs identified for the %s eCRE above thresh=%.6f" % (name, minthresh))
 
     def plot_motif_distributions(self):
 
@@ -607,6 +593,21 @@ python2 moods-dna.py  \
         ax2.legend()
         fig2.tight_layout()
         fig2.savefig("results/motifs/hit_score/merge.pdf")
+
+    def make_truth_matrix(self):
+        eCRE_beds = []
+        for bed in os.listdir("reference/eCRE_locs"):
+            if ".DS" not in bed:
+                eCRE_beds.append(bed)
+        eCRE_names = [bed.split(".bed")[0] for bed in eCRE_beds]
+        for bed in eCRE_beds:
+            names, hits = [],[]
+            for i in range(self.chip_truth.shape[0]):
+                chip_name, publication, file = self.chip_truth.iloc[i]
+                hit = BedTool(bed).intersect().to_dataframe().shape[0]
+                names.append(chip_name)
+                hits.append(hit)
+            print(names,hits)
 
     def get_threshold(self,required_dicts=False,percentile=80):
         if required_dicts is not False:
@@ -904,7 +905,7 @@ file_type = bigwig
 [%s]
 file=%s
 title=%s
-%s
+color = %s
 height = %.3f
 # line_width = 0.5
 gene_rows = %d
@@ -918,7 +919,7 @@ style = UCSC
 [%s]
 file=%s
 title=%s
-%s
+color = %s
 height = %.3f
 # line_width = 0.5
 # gene_rows = 2
@@ -1133,14 +1134,10 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :param labels:
         :return:
         """
-        if color is None:
-            col = "color = bed_rgb"
-        else:
-            col = "color = %s"%color
         if gene_rows is None:
-            out = self.archetype_template_height % (name, dir, name, col, height, labels)
+            out = self.archetype_template_height % (name, dir, name, color, height, labels)
         else:
-            out = self.archetype_template_rows % (name, dir, name, col, height, gene_rows, labels)
+            out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
     def write_bw(self,f,source_file=None,color="#666",min_value = 0):
@@ -1219,7 +1216,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
             self.write_bw(f,self.phylo_files,color="green",min_value="auto")
             # self.write_bedgraph(f)
         f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s.bed" % (self.eCRE),
-                         height=3,color=None))
+                         height=3,color="bed_rgb"))
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
