@@ -600,14 +600,17 @@ python2 moods-dna.py  \
             if ".DS" not in bed:
                 eCRE_beds.append(bed)
         eCRE_names = [bed.split(".bed")[0] for bed in eCRE_beds]
+        dicts = []
         for bed in eCRE_beds:
             names, hits = [],[]
             for i in range(self.chip_truth.shape[0]):
                 chip_name, publication, file = self.chip_truth.iloc[i]
-                hit = BedTool("reference/eCRE_locs/%s"%bed).intersect().to_dataframe().shape[0]
+                hit = BedTool("reference/eCRE_locs/%s"%bed).intersect(file).to_dataframe().shape[0]
                 names.append(chip_name)
                 hits.append(hit)
-            print(names,hits)
+            dicts.append(dict(zip(names,hits)))
+        truth_mat = dict(zip(eCRE_names,dicts))
+        print(truth_mat)
 
     def get_threshold(self,required_dicts=False,percentile=80):
         if required_dicts is not False:
