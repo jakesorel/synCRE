@@ -593,25 +593,25 @@ python2 moods-dna.py  \
         ax2.legend()
         fig2.tight_layout()
         fig2.savefig("results/motifs/hit_score/merge.pdf")
-
-    def make_truth_matrix(self):
-        eCRE_beds = []
-        for bed in os.listdir("reference/eCRE_locs"):
-            if ".DS" not in bed:
-                eCRE_beds.append(bed)
-        eCRE_names = [bed.split(".bed")[0] for bed in eCRE_beds]
-        dicts = []
-        for bed in eCRE_beds:
-            names, hits = [],[]
-            for i in range(self.chip_truth.shape[0]):
-                chip_name, publication, file = self.chip_truth.iloc[i]
-                hit = BedTool("reference/eCRE_locs/%s"%bed).intersect(file).to_dataframe()
-                print(hit)
-                names.append(chip_name)
-                hits.append(hit)
-            dicts.append(dict(zip(names,hits)))
-        truth_mat = dict(zip(eCRE_names,dicts))
-        # print(truth_mat)
+    #
+    # def make_truth_matrix(self):
+    #     eCRE_beds = []
+    #     for bed in os.listdir("reference/eCRE_locs"):
+    #         if ".DS" not in bed:
+    #             eCRE_beds.append(bed)
+    #     eCRE_names = [bed.split(".bed")[0] for bed in eCRE_beds]
+    #     dicts = []
+    #     for bed in eCRE_beds:
+    #         names, hits = [],[]
+    #         for i in range(self.chip_truth.shape[0]):
+    #             chip_name, publication, file = self.chip_truth.iloc[i]
+    #             hit = BedTool("reference/eCRE_locs/%s"%bed).intersect(file).to_dataframe()
+    #             print(hit)
+    #             names.append(chip_name)
+    #             hits.append(hit)
+    #         dicts.append(dict(zip(names,hits)))
+    #     truth_mat = dict(zip(eCRE_names,dicts))
+    #     # print(truth_mat)
 
     def get_threshold(self,required_dicts=False,percentile=80):
         if required_dicts is not False:
