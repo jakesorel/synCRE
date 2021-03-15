@@ -38,6 +38,7 @@ from synCRE import *
 eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
 eCREs = os.listdir("results/motifs/bed")
 
+
 for eCRE in eCREs:
     if ".bed" in eCRE:
         eCRE = eCRE.split(".bed")[0]
