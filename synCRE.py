@@ -652,8 +652,11 @@ python2 moods-dna.py  \
                     a = 1
                     cid = self.lookup[TF]
                     cid_df = bed_df.loc[bed_df[3] == cid]
-                    thresh_dicts.append(
-                        {"eCRE": eCRE, "TF": TF, "thresh": cid_df[4].values[(-1 * cid_df[4]).argsort()][num - 1]})
+                    if cid_df.size!=0:
+                        thresh_dicts.append(
+                            {"eCRE": eCRE, "TF": TF, "thresh": cid_df[4].values[(-1 * cid_df[4]).argsort()][num - 1]})
+                    if cid_df.size==0:
+                        print("No match found for TF %s in eCRE %s, ignoring..."%(TF,eCRE))
             self.hit_thresh = pd.DataFrame(thresh_dicts)["thresh"].min()
         else:
             raw_files = os.listdir("results/motifs/raw")
