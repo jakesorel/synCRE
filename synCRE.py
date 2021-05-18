@@ -902,29 +902,13 @@ title=%s
 color = %s
 negative_color=%s
 min_value = %s
-#max_value = auto
+max_value = %s
 height = %.3f
 number_of_bins = 200
 nans_to_zeros = false
 show_data_range = true
 file_type = bigwig
         """
-
-        self.bigwig_template_sharey = """
-[%s]
-file=%s
-title=%s
-color = %s
-negative_color=%s
-min_value = %s
-#max_value = auto
-height = %.3f
-number_of_bins = 200
-nans_to_zeros = false
-show_data_range = true
-file_type = bigwig
-overlay_previous = share-y
-                """
 
         self.archetype_template_rows = """
 [%s]
@@ -1136,7 +1120,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f
 pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         """
 
-    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0,share_y=False):
+    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0,max_value="auto"):
         """
 
         :param name:
@@ -1145,10 +1129,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         :param height:
         :return:
         """
-        if share_y is False:
-            return self.bigwig_template % (name, dir, name, color, negative_color,min_value,height)
-        else:
-            return self.bigwig_template_sharey % (name, dir, name, color, negative_color,min_value,height)
+        return self.bigwig_template % (name, dir, name, color, negative_color,min_value,max_value,height)
 
 
 
@@ -1169,7 +1150,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,color="#666",min_value = 0,share_y=False):
+    def write_bw(self,f,source_file=None,color="#666",min_value = 0):
         """
 
         :param f:
@@ -1179,9 +1160,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
             source_file = self.bigwigs
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value,share_y=share_y))
+                f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value))
 
-    def write_atac(self,f,source_file=None,colors=None,min_value = 0,share_y=False):
+    def write_atac(self,f,source_file=None,colors=None,min_value = 0,max_value=20):
         """
 
         :param f:
@@ -1195,7 +1176,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         k = 0
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=colors[k],min_value=min_value,share_y=share_y))
+                f.write(self.make_bigwig(bwname, bwdir,color='#%02x%02x%02x' % tuple(colors[k]),min_value=min_value,max_value=max_value))
                 k+=1
 
     def write_bedgraph(self,f):
