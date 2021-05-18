@@ -903,7 +903,7 @@ min_value = %s
 #max_value = auto
 height = %.3f
 number of bins = 500
-nans to zeros = True
+nans to zeros = False
 show data range = yes
 file_type = bigwig
         """
