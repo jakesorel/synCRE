@@ -44,12 +44,12 @@ for eCRE in eCREs:
         eCRE = eCRE.split(".bed")[0]
         plot = GenomePlot(eCRE,plot_constructs=True,plot_bw=True,plot_genes=False,plot_phylo=False)
         # plot.ini_all_motifs()
-        plot.ini_atac()
+        plot.ini_atac(max_value=25)
         # plot.ini_by_cluster()
         # plot.ini_relevant_clusters()
         # plot.ini_by_cluster_merge()
         # plot.ini_by_candidate()
-        plot.make_plots(parallel=True,suppress=False,width=40)
+        plot.make_plots(parallel=True,suppress=True,width=40)
         print("""
         ################################################
         Plots for %s complete

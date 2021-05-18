@@ -1170,9 +1170,8 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         """
         if source_file is None:
             source_file = self.atac
-        print(source_file)
         if colors is None:
-            colors = plt.cm.plasma(np.linspace(0,1,source_file.shape[0]))
+            colors = plt.cm.inferno(np.linspace(0,0.6,source_file.shape[0]))
         k = 0
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
