@@ -1,4 +1,4 @@
-ATAC_D3_500_M	/camp/lab/briscoej/working/Joaquina/hpc_camp/ATAC_Full/results/bwa/mergedLibrary/bigwig/D3_500_M_R1.mLb.clN.bigWig
+ATAC_D3_0_NMP	/camp/lab/briscoej/working/Joaquina/hpc_camp/ATAC_Full/results/bwa/mergedLibrary/bigwig/D3_0_NMP_R1.mLb.clN.bigWig
 ATAC_D4_500_M	/camp/lab/briscoej/working/Joaquina/hpc_camp/ATAC_Full/results/bwa/mergedLibrary/bigwig/D4_500_M_R1.mLb.clN.bigWig
 ATAC_D5_500_M	/camp/lab/briscoej/working/Joaquina/hpc_camp/ATAC_Full/results/bwa/mergedLibrary/bigwig/D5_500_M_R1.mLb.clN.bigWig
 ATAC_D6_500_M	/camp/lab/briscoej/working/Joaquina/hpc_camp/ATAC_Full/results/bwa/mergedLibrary/bigwig/D6_500_M_R1.mLb.clN.bigWig
