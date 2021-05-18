@@ -904,26 +904,26 @@ negative_color=%s
 min_value = %s
 #max_value = auto
 height = %.3f
-number of bins = 200
-nans to zeros = False
-show data range = yes
+number_of_bins = 200
+nans_to_zeros = false
+show_data_range = true
 file_type = bigwig
         """
 
         self.bigwig_template_sharey = """
-        [%s]
-        file=%s
-        title=%s
-        color = %s
-        negative_color=%s
-        min_value = %s
-        #max_value = auto
-        height = %.3f
-        number of bins = 200
-        nans to zeros = False
-        show data range = yes
-        file_type = bigwig
-        overlay_previous = share-y
+[%s]
+file=%s
+title=%s
+color = %s
+negative_color=%s
+min_value = %s
+#max_value = auto
+height = %.3f
+number_of_bins = 200
+nans_to_zeros = false
+show_data_range = true
+file_type = bigwig
+overlay_previous = share-y
                 """
 
         self.archetype_template_rows = """
