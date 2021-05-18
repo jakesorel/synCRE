@@ -881,6 +881,8 @@ class GenomePlot:
 
         self.bigwigs = pd.read_csv("reference/bigwig_files.txt", sep="\t", header=None)
         self.bigwigs.columns = ["name", "dir"]
+        self.atac = pd.read_csv("reference/atac_files.txt", sep="\t", header=None)
+        self.atac.columns = ["name", "dir"]
         self.phylo_files = pd.read_csv("reference/phylo_files.txt",sep="\t",header=None)
         self.phylo_files.columns = ["name", "dir"]
         self.plot_constructs = plot_constructs
@@ -907,6 +909,22 @@ nans to zeros = False
 show data range = yes
 file_type = bigwig
         """
+
+        self.bigwig_template_sharey = """
+        [%s]
+        file=%s
+        title=%s
+        color = %s
+        negative_color=%s
+        min_value = %s
+        #max_value = auto
+        height = %.3f
+        number of bins = 200
+        nans to zeros = False
+        show data range = yes
+        file_type = bigwig
+        overlay_previous = share-y
+                """
 
         self.archetype_template_rows = """
 [%s]
@@ -1118,7 +1136,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f
 pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         """
 
-    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0):
+    def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0,share_y=False):
         """
 
         :param name:
@@ -1127,7 +1145,11 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         :param height:
         :return:
         """
-        return self.bigwig_template % (name, dir, name, color, negative_color,min_value,height)
+        if share_y is False:
+            return self.bigwig_template % (name, dir, name, color, negative_color,min_value,height)
+        else:
+            return self.bigwig_template_sharey % (name, dir, name, color, negative_color,min_value,height)
+
 
 
     def make_bed(self,name, dir, color="darkblue", height=0.75, gene_rows=None, labels="off"):
@@ -1159,6 +1181,22 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value))
 
+    def write_atac(self,f,source_file=None,colors=None,min_value = 0):
+        """
+
+        :param f:
+        :return:
+        """
+        if source_file is None:
+            source_file = self.atac
+        if colors is None:
+            colors = plt.cm.plasma(np.linspace(0,1,source_file.shape[0]))
+        k = 0
+        for bwname, bwdir in source_file.values:
+            if "#" not in bwname:
+                f.write(self.make_bigwig(bwname, bwdir,color=colors[k],min_value=min_value))
+                k+=1
+
     def write_bedgraph(self,f):
         """
 
@@ -1184,6 +1222,26 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
                 f.write("""
 [spacer]
                 """)
+
+    def ini_atac(self):
+        """
+
+        :return:
+        """
+        f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "atac"), 'w')
+        if self.plot_bw:
+            self.write_bw(f)
+        if self.plot_genes:
+            f.write(self.genes)
+        if self.plot_constructs:
+            self.write_bd(f)
+        if self.plot_phylo:
+            self.write_bw(f,self.phylo_files,color="green",min_value="auto")
+            # self.write_bedgraph(f)
+        f.write(self.foot)
+        f.close()  # you can omit in most cases as the destructor will call it
+
+
     def ini_all_motifs(self):
         """
 
