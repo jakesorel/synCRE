@@ -1187,9 +1187,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         :param f:
         :return:
         """
-        print("write atac")
         if source_file is None:
             source_file = self.atac
+        print(source_file)
         if colors is None:
             colors = plt.cm.plasma(np.linspace(0,1,source_file.shape[0]))
         k = 0
@@ -1229,7 +1229,6 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
 
         :return:
         """
-        print("ini_atac")
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "atac"), 'w')
         if self.plot_bw:
             self.write_atac(f,share_y=True)
