@@ -1205,20 +1205,20 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
 [spacer]
                 """)
 
-    def ini_atac(self):
+    def ini_atac(self,max_value=20):
         """
 
         :return:
         """
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "atac"), 'w')
         if self.plot_bw:
-            self.write_atac(f,share_y=True)
+            self.write_atac(f,max_value=max_value)
         if self.plot_genes:
             f.write(self.genes)
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bw(f,self.phylo_files,color="green",min_value="auto",share_y=True)
+            self.write_bw(f,self.phylo_files,color="green",min_value="auto")
             # self.write_bedgraph(f)
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
