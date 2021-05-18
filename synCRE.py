@@ -1169,7 +1169,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,color="#666",min_value = 0):
+    def write_bw(self,f,source_file=None,color="#666",min_value = 0,share_y=False):
         """
 
         :param f:
@@ -1179,9 +1179,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
             source_file = self.bigwigs
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value))
+                f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value,share_y=share_y))
 
-    def write_atac(self,f,source_file=None,colors=None,min_value = 0):
+    def write_atac(self,f,source_file=None,colors=None,min_value = 0,share_y=False):
         """
 
         :param f:
@@ -1194,7 +1194,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         k = 0
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=colors[k],min_value=min_value))
+                f.write(self.make_bigwig(bwname, bwdir,color=colors[k],min_value=min_value,share_y=share_y))
                 k+=1
 
     def write_bedgraph(self,f):
@@ -1236,7 +1236,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         if self.plot_constructs:
             self.write_bd(f)
         if self.plot_phylo:
-            self.write_bw(f,self.phylo_files,color="green",min_value="auto")
+            self.write_bw(f,self.phylo_files,color="green",min_value="auto",share_y=True)
             # self.write_bedgraph(f)
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
