@@ -1325,6 +1325,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         else:
             return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path,width)
 
+
     def clean_configs(self):
         for path, subdirs, files in os.walk("results/genome_plots"):
             for name in files:
