@@ -1111,11 +1111,11 @@ file_type = bedgraph
         """
 
         self.runline_template = """
-pyGenomeTracks --tracks %s --region %s:%d-%d -o %s
+pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f
         """
 
         self.runline_template_suppress = """
-pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
+pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         """
 
     def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0):
@@ -1312,7 +1312,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         f.write(self.foot)
         f.close()
 
-    def make_runline(self,config_path,plot_path,suppress=True):
+    def make_runline(self,config_path,plot_path,suppress=True,width=20):
         """
 
         :param config_path:
@@ -1321,9 +1321,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s >/dev/null 2>&1
         :return:
         """
         if suppress is True:
-            return self.runline_template_suppress%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
+            return self.runline_template_suppress%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path,width)
         else:
-            return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path)
+            return self.runline_template%(config_path,self.e_chrom,self.e_start,self.e_end,plot_path,width)
 
     def clean_configs(self):
         for path, subdirs, files in os.walk("results/genome_plots"):
