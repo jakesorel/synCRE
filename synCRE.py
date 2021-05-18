@@ -1176,7 +1176,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
         k = 0
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color='#%02x%02x%02x' % tuple(colors[k]),min_value=min_value,max_value=max_value))
+                f.write(self.make_bigwig(bwname, bwdir,color='#%02x%02x%02x' % tuple((colors[k]*256).astype(np.int64)),min_value=min_value,max_value=max_value))
                 k+=1
 
     def write_bedgraph(self,f):
