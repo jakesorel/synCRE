@@ -1332,7 +1332,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
                 if ".ini" in config_path:
                     os.remove(config_path)
 
-    def make_plots(self,parallel = False,suppress = True):
+    def make_plots(self,parallel = False,suppress = True,width=20):
         """
         Makes plots for all avaliable config files
         :return:
@@ -1350,7 +1350,7 @@ source activate pygenometracks \n
                 config_path = os.path.join(path, name)
                 if ".ini" in config_path:
                     plot_path = config_path.replace("config_files","plots").replace(".ini",".pdf")
-                    runline = self.make_runline(config_path,plot_path,suppress=suppress)
+                    runline = self.make_runline(config_path,plot_path,suppress=suppress,width=width)
                     if parallel is False:
                         script += runline
                     else:
