@@ -1139,7 +1139,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
 
 
 
-    def make_bed(self,name, dir, color="darkblue", height=0.75, gene_rows=None, labels="off"):
+    def make_bed(self,name, dir, color="black", height=0.75, gene_rows=None, labels="off"):
         """
 
         :param name:
@@ -1156,7 +1156,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,color=None,min_value = 0):
+    def write_bw(self,f,source_file=None,color=None,min_value = 0,height=3):
         """
 
         :param f:
@@ -1174,7 +1174,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
                 color = np.array(['#%02x%02x%02x' % tuple((col[:3]*256).astype(np.int64)) for col in color])
         for k, (bwname, bwdir) in enumerate(source_file.values):
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=color[k],min_value=min_value))
+                f.write(self.make_bigwig(bwname, bwdir,color=color[k],min_value=min_value,height=height))
 
     def write_atac(self,f,source_file=None,colors=None,min_value = 0,max_value=20):
         """
@@ -1267,7 +1267,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
         """
         f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, "all", "relevant_clusters"), 'w')
         if self.plot_bw:
-            self.write_bw(f)
+            self.write_bw(f,height=0.5,color=True)
         if self.plot_genes:
             f.write(self.genes)
         if self.plot_constructs:
