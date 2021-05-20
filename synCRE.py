@@ -1268,17 +1268,37 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
         f.close()  # you can omit in most cases as the destructor will call it
 
 
-    def ini_by_cluster_merge(self):
+    def ini_by_cluster_merge(self,together=False):
         """
 
         :return:
         """
         cat = "by_cluster_merge"
         archetype_files = os.listdir("results/motifs/by_cluster/%s" % self.eCRE)
-        for archetype_file in archetype_files:
-            cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
-            cluster_name = "cluster_%d" % cluster_no
-            f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
+        if together is False:
+            for archetype_file in archetype_files:
+                cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
+                cluster_name = "cluster_%d" % cluster_no
+                f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, cluster_name), 'w')
+                if self.plot_bw:
+                    self.write_bw(f)
+                if self.plot_genes:
+                    f.write(self.genes)
+                if self.plot_constructs:
+                    self.write_bd(f)
+                if self.plot_phylo:
+                    self.write_bw(f, self.phylo_files, color="green", min_value="auto")
+                bedgraph_name = ("results/motifs/by_cluster/%s/%s"%(self.eCRE,archetype_file)).split(".bed")[0] + ".bedfile"
+                if os.path.exists("results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name)):
+                    f.write(self.bedgraph_template % (
+                    cluster_name, "results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name), cluster_name))
+                else:
+                    f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
+                                     height=3))
+                f.write(self.foot)
+                f.close()
+        else:
+            f = open('results/genome_plots/%s/config_files/%s/%s.ini' % (self.eCRE, cat, "together"), 'w')
             if self.plot_bw:
                 self.write_bw(f)
             if self.plot_genes:
@@ -1287,15 +1307,15 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
                 self.write_bd(f)
             if self.plot_phylo:
                 self.write_bw(f, self.phylo_files, color="green", min_value="auto")
-            bedgraph_name = ("results/motifs/by_cluster/%s/%s"%(self.eCRE,archetype_file)).split(".bed")[0] + ".bedfile"
-            if os.path.exists("results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name)):
-                f.write(self.bedgraph_template % (
-                cluster_name, "results/motifs/by_cluster/%s/%s" % (self.eCRE,bedgraph_name), cluster_name))
-            else:
+            for archetype_file in archetype_files:
+                cluster_no = int((archetype_file.split(".bed")[0]).split("cluster_")[1])
+                cluster_name = "cluster_%d" % cluster_no
                 f.write(self.make_bed(name=cluster_name, dir="results/motifs/by_cluster/%s/%s" % (self.eCRE, archetype_file),
                                  height=3))
             f.write(self.foot)
             f.close()
+
+
 
     def ini_by_cluster(self):
         """
