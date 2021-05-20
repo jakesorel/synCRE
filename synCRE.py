@@ -815,6 +815,11 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
                 adf.to_csv("results/motifs/relevant_clusters/%s" % (bed), sep="\t", header=None,
                            index=None)
 
+                ##make a merged bed file lacking the colours.
+                merge_bed_file_name = "results/motifs/relevant_clusters/%s" % (bed.split(".bed")+"_merge.bed")
+                adf[adf.columns[:3]].to_csv(merge_bed_file_name, sep="\t", header=None,
+                           index=None)
+                BedTool(merge_bed_file_name).merge().saveas(merge_bed_file_name)
 
     def motifs_by_cluster(self,make_bedgraph=True):
         """
@@ -1255,7 +1260,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
-    def ini_relevant_clusters(self):
+    def ini_relevant_clusters(self,split_clusters=True):
         """
 
         :return:
@@ -1270,8 +1275,12 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
         if self.plot_phylo:
             self.write_bw(f,self.phylo_files,color="green",min_value="auto")
             # self.write_bedgraph(f)
-        f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s.bed" % (self.eCRE),
-                         height=3,color="bed_rgb"))
+        if split_clusters is True:
+            f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s.bed" % (self.eCRE),
+                             height=3,color="bed_rgb"))
+        else:
+            f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s_merge.bed" % (self.eCRE),
+                             height=3))
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 

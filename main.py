@@ -50,7 +50,7 @@ for eCRE in eCREs:
         plot.ini_relevant_clusters()
         plot.ini_by_cluster_merge(together=True)
         # plot.ini_by_candidate()
-        plot.make_plots(parallel=True,suppress=True,width=10)
+        plot.make_plots(parallel=True,suppress=False,width=10)
         print("""
         ################################################
         Plots for %s complete
