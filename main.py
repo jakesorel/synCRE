@@ -47,7 +47,7 @@ for eCRE in eCREs:
         # plot.ini_all_motifs()
         # plot.ini_atac(max_value=max_val_dict[eCRE])
         # plot.ini_by_cluster()
-        plot.ini_relevant_clusters()
+        plot.ini_relevant_clusters(split_clusters=False)
         plot.ini_by_cluster_merge(together=True)
         # plot.ini_by_candidate()
         plot.make_plots(parallel=True,suppress=False,width=10)
