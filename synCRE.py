@@ -812,7 +812,6 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
 
                         except:
                             a = 1
-                adf.to
                 adf.to_csv("results/motifs/relevant_clusters/%s" % (bed), sep="\t", header=None,
                            index=None)
 

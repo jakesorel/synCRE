@@ -28,7 +28,7 @@ mtf.motif_to_bed()
 # # # mtf.motifs_to_bedgraph()
 mtf.motifs_by_archetype(collapse=False)
 mtf.motifs_by_cluster(make_bedgraph=False)
-# mtf.collapse_all_bed()
+mtf.collapse_all_bed()
 # mtf.collapse_bed_relevant_clusters(clusters=[0,3,4,5])
 # print("motifs found")
 #
