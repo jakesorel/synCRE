@@ -1151,7 +1151,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
             out = self.archetype_template_rows % (name, dir, name, color, height, gene_rows, labels)
         return out
 
-    def write_bw(self,f,source_file=None,color="#666",min_value = 0):
+    def write_bw(self,f,source_file=None,color=None,min_value = 0):
         """
 
         :param f:
@@ -1159,6 +1159,14 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
         """
         if source_file is None:
             source_file = self.bigwigs
+        if color is None:
+            color = np.repeat("#666",source_file.shape[0])
+        else:
+            if color is True:
+                vals = np.linspace(0,0.6,source_file.shape[0])
+                np.shuffle(vals)
+                color = plt.cm.inferno(vals)
+                color = np.array(['#%02x%02x%02x' % tuple((col[:3]*256).astype(np.int64)) for col in color])
         for bwname, bwdir in source_file.values:
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value))

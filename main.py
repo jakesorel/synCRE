@@ -24,7 +24,7 @@ mtf = Motif_Finder()
 #                   "Pax6": {"Olig2": 1, "Nkx2-2": 1,"Sox2":1}}
 # mtf.filter_motifs_by_hit(required_dicts)
 # mtf.plot_motif_distributions()
-# mtf.motif_to_bed()
+mtf.motif_to_bed()
 # # # mtf.motifs_to_bedgraph()
 mtf.motifs_by_archetype(collapse=True)
 mtf.motifs_by_cluster(make_bedgraph=False)
