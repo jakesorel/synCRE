@@ -1109,6 +1109,7 @@ file_type = bedgraph
 
         self.foot = """
 [x-axis]
+fontsize=6
 [spacer]
         """
 
