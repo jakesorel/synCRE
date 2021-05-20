@@ -13,7 +13,7 @@ from synCRE import *
 # ##############################
 # # Find motifs within each eCRE
 # ##############################
-# mtf = Motif_Finder()
+mtf = Motif_Finder()
 # # mtf.make_pmf()
 # # mtf.sample_eCRE_sequence()
 # # mtf.find_motifs(4)
@@ -24,10 +24,10 @@ from synCRE import *
 #                   "Pax6": {"Olig2": 1, "Nkx2-2": 1,"Sox2":1}}
 # mtf.filter_motifs_by_hit(required_dicts)
 # mtf.plot_motif_distributions()
-# mtf.motif_to_bed()
+mtf.motif_to_bed()
 # # # mtf.motifs_to_bedgraph()
-# mtf.motifs_by_archetype(collapse=True)
-# mtf.motifs_by_cluster(make_bedgraph=False)
+mtf.motifs_by_archetype(collapse=False)
+mtf.motifs_by_cluster(make_bedgraph=False)
 # mtf.collapse_all_bed()
 # mtf.collapse_bed_relevant_clusters(clusters=[0,3,4,5])
 # print("motifs found")
@@ -44,9 +44,9 @@ for eCRE in eCREs:
     if ".bed" in eCRE:
         eCRE = eCRE.split(".bed")[0]
         plot = GenomePlot(eCRE,plot_constructs=False,plot_bw=True,plot_genes=False,plot_phylo=False)
-        # plot.ini_all_motifs()
-        plot.ini_atac(max_value=max_val_dict[eCRE])
-        # plot.ini_by_cluster()
+        plot.ini_all_motifs()
+        # plot.ini_atac(max_value=max_val_dict[eCRE])
+        plot.ini_by_cluster()
         # plot.ini_relevant_clusters()
         # plot.ini_by_cluster_merge()
         # plot.ini_by_candidate()
