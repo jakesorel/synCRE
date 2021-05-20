@@ -1168,9 +1168,7 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
             color = np.repeat("#666",source_file.shape[0])
         else:
             if color is True:
-                vals = np.linspace(0,0.6,source_file.shape[0])
-                np.random.shuffle(vals)
-                color = plt.cm.inferno(vals)
+                color = plt.cm.Dark2(np.linspace(0,1,source_file.shape[0]))
                 color = np.array(['#%02x%02x%02x' % tuple((col[:3]*256).astype(np.int64)) for col in color])
         for k, (bwname, bwdir) in enumerate(source_file.values):
             if "#" not in bwname:
