@@ -1113,11 +1113,11 @@ file_type = bedgraph
         """
 
         self.runline_template = """
-pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f
+pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6
         """
 
         self.runline_template_suppress = """
-pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f >/dev/null 2>&1
+pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/dev/null 2>&1
         """
 
     def make_bigwig(self,name, dir, color="#666", negative_color="red",height=1.5,min_value=0,max_value="auto"):
