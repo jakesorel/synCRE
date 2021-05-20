@@ -817,9 +817,9 @@ sort -k2,2n -k3,3n results/motifs/bed/%s.bed -o results/motifs/bed/%s.bed
 
                 ##make a merged bed file lacking the colours.
                 merge_bed_file_name = "results/motifs/relevant_clusters/%s" % (bed.split(".bed")[0]+"_merge.bed")
-                adf[adf.columns[:3]].to_csv(merge_bed_file_name, sep="\t", header=None,
+                adf[adf.columns[:3]].drop_duplicates().to_csv(merge_bed_file_name, sep="\t", header=None,
                            index=None)
-                BedTool(merge_bed_file_name).merge().saveas(merge_bed_file_name)
+                # BedTool(merge_bed_file_name).merge().saveas(merge_bed_file_name)
 
     def motifs_by_cluster(self,make_bedgraph=True):
         """
