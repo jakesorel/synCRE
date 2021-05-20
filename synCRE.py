@@ -916,6 +916,7 @@ file_type = bigwig
         """
 
         self.archetype_template_rows = """
+[spacer]
 [%s]
 file=%s
 title=%s
@@ -930,6 +931,7 @@ style = UCSC
         """
 
         self.archetype_template_height = """
+[spacer]
 [%s]
 file=%s
 title=%s
