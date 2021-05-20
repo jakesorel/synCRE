@@ -1172,9 +1172,9 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
                 np.shuffle(vals)
                 color = plt.cm.inferno(vals)
                 color = np.array(['#%02x%02x%02x' % tuple((col[:3]*256).astype(np.int64)) for col in color])
-        for bwname, bwdir in source_file.values:
+        for k, (bwname, bwdir) in enumerate(source_file.values):
             if "#" not in bwname:
-                f.write(self.make_bigwig(bwname, bwdir,color=color,min_value=min_value))
+                f.write(self.make_bigwig(bwname, bwdir,color=color[k],min_value=min_value))
 
     def write_atac(self,f,source_file=None,colors=None,min_value = 0,max_value=20):
         """
@@ -1277,10 +1277,10 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
             # self.write_bedgraph(f)
         if split_clusters is True:
             f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s.bed" % (self.eCRE),
-                             height=0.5,color="bed_rgb"))
+                             height=0.5,color="bed_rgb",gene_rows=2))
         else:
             f.write(self.make_bed("Archetypes for relevant clusters", "results/motifs/relevant_clusters/%s_merge.bed" % (self.eCRE),
-                             height=0.5))
+                             height=0.5,gene_rows=2))
         f.write(self.foot)
         f.close()  # you can omit in most cases as the destructor will call it
 
