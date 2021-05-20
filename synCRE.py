@@ -1168,12 +1168,13 @@ pyGenomeTracks --tracks %s --region %s:%d-%d -o %s --width %.2f --fontSize 6 >/d
             color = np.repeat("#666",source_file.shape[0])
         else:
             if color is True:
-                color = plt.cm.Dark2(np.linspace(0,1,source_file.shape[0]))
+                color = plt.cm.Dark2(np.linspace(0,1,np.array(["#" not in name for name in source_file["name"]]).sum()))
                 color = np.array(['#%02x%02x%02x' % tuple((col[:3]*256).astype(np.int64)) for col in color])
-        for k, (bwname, bwdir) in enumerate(source_file.values):
+        k = 0
+        for bwname, bwdir in source_file.values:
             if "#" not in bwname:
                 f.write(self.make_bigwig(bwname, bwdir,color=color[k],min_value=min_value,height=height))
-
+                k+=1
     def write_atac(self,f,source_file=None,colors=None,min_value = 0,max_value=20):
         """
 
