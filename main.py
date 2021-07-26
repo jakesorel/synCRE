@@ -13,9 +13,9 @@ from synCRE import *
 # ##############################
 # # Find motifs within each eCRE
 # ##############################
-# mtf = Motif_Finder()
+mtf = Motif_Finder()
 # # mtf.make_pmf()
-# # mtf.sample_eCRE_sequence()
+mtf.sample_eCRE_sequence()
 # # mtf.find_motifs(4)
 # # mtf.make_truth_matrix()
 # #
@@ -35,27 +35,27 @@ from synCRE import *
 ##############################
 # Plot data
 ##############################
-eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
-eCREs = os.listdir("results/motifs/bed")
-
-max_val_dict={"Olig2":25,"Nkx2-2":20,"Pax6":20}
-
-for eCRE in eCREs:
-    if ".bed" in eCRE:
-        eCRE = eCRE.split(".bed")[0]
-        plot = GenomePlot(eCRE,plot_constructs=False,plot_bw=True,plot_genes=False,plot_phylo=False)
-        # plot.ini_all_motifs()
-        # plot.ini_atac(max_value=max_val_dict[eCRE])
-        # plot.ini_by_cluster()
-        plot.ini_relevant_clusters(split_clusters=False)
-        # plot.ini_by_cluster_merge(together=True)
-        # plot.ini_by_candidate()
-        plot.make_plots(parallel=True,suppress=False,width=10)
-        print("""
-        ################################################
-        Plots for %s complete
-        ################################################
-        """%eCRE)
+# eCREs = [name.split(".bed")[0] for name in os.listdir("results/motifs/bed")]
+# eCREs = os.listdir("results/motifs/bed")
+#
+# max_val_dict={"Olig2":25,"Nkx2-2":20,"Pax6":20}
+#
+# for eCRE in eCREs:
+#     if ".bed" in eCRE:
+#         eCRE = eCRE.split(".bed")[0]
+#         plot = GenomePlot(eCRE,plot_constructs=False,plot_bw=True,plot_genes=False,plot_phylo=False)
+#         # plot.ini_all_motifs()
+#         # plot.ini_atac(max_value=max_val_dict[eCRE])
+#         # plot.ini_by_cluster()
+#         plot.ini_relevant_clusters(split_clusters=False)
+#         # plot.ini_by_cluster_merge(together=True)
+#         # plot.ini_by_candidate()
+#         plot.make_plots(parallel=True,suppress=False,width=10)
+#         print("""
+#         ################################################
+#         Plots for %s complete
+#         ################################################
+#         """%eCRE)
 #
 #
 # """
